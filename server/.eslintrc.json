@@ -1,0 +1,42 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es2021": true
+  },
+  "extends": ["prettier", "airbnb-base"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12
+  },
+  "plugins": ["prettier", "@typescript-eslint"],
+  "rules": {
+    "no-nested-ternary": "off",
+    "import/prefer-default-export": "off",
+    "max-len": "off",
+    "object-shorthand": "off",
+    "no-use-before-define": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "react/button-has-type": "off",
+    "no-shadow": "off",
+    "no-console": "off",
+    "no-alert": "off",
+    "import/no-dynamic-require": "off",
+    "global-require": "off",
+    "prefer-destructuring": "off",
+    "prefer-template": "off",
+    "arrow-body-style": "off",
+    "object-curly-newline": "off",
+    "jsx-a11y/anchor-has-content": "off",
+    "jsx-a11y/control-has-associated-label": "off",
+    "jsx-a11y/label-has-associated-control": "off",
+    "react/prop-types": "off",
+    "jsx-a11y/interactive-supports-focus": "off",
+    "react/destructuring-assignment": 0,
+    "consistent-return": "off"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "prettier",
+    "plugin:react/recommended",
+    "airbnb"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["prettier", "react", "@typescript-eslint"],
+  "rules": {
+    "no-unused-vars": "off",
+    "no-nested-ternary": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "import/prefer-default-export": "off",
+    "react/no-unescaped-entities": "off",
+    "max-len": "off",
+    "object-shorthand": "off",
+    "react/no-danger": "off",
+    "no-use-before-define": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "react/button-has-type": "off",
+    "no-shadow": "off",
+    "no-console": "off",
+    "no-alert": "off",
+    "import/no-dynamic-require": "off",
+    "global-require": "off",
+    "react/no-array-index-key": "off",
+    "prefer-destructuring": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/jsx-filename-extension": "off",
+    "prefer-template": "off",
+    "arrow-body-style": "off",
+    "object-curly-newline": "off",
+    "jsx-a11y/anchor-has-content": "off",
+    "jsx-a11y/control-has-associated-label": "off",
+    "jsx-a11y/label-has-associated-control": "off",
+    "react/prop-types": "off",
+    "jsx-a11y/interactive-supports-focus": "off",
+    "react/destructuring-assignment": 0,
+    "consistent-return": "off"
+  }
+}
