@@ -5,12 +5,12 @@ import { auth, createUserProfileDocument } from './firebase';
 import './App.css';
 import { ClientContext } from './context';
 import LoginPage from './routes/login';
-// import LoadingPage from './routes/loading';
-// import Home from './routes/home';
+import LoadingPage from './routes/loading';
+import Home from './routes/home';
 
 function App() {
   const context = useContext(ClientContext);
-  const { user, setUser, initializing, setInitializing } = context;
+  const { user, setUser, loading, setLoading } = context;
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -22,12 +22,11 @@ function App() {
             id: snapShot.id,
             ...snapShot.data(),
           });
+          setLoading(false);
         });
       } else {
+        setLoading(false);
         setUser(false);
-      }
-      if (initializing) {
-        setInitializing(false);
       }
     });
 
@@ -37,7 +36,7 @@ function App() {
 
   return (
     <div className="App">
-      {/* {initializing ? (
+      {loading ? (
         <LoadingPage />
       ) : !user ? (
         <LoginPage />
@@ -47,8 +46,7 @@ function App() {
             <Route exact path="/" component={Home} />
           </Switch>
         </div>
-      )} */}
-      <LoginPage />
+      )}
     </div>
   );
 }

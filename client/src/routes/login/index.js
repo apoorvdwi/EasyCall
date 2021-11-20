@@ -52,6 +52,8 @@ const LoginWrapper = styled.div`
 
     .videoIllus {
       height: 100%;
+      -webkit-transform: scaleX(-1);
+      transform: scaleX(-1);
     }
   }
 `;
