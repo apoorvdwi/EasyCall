@@ -1,8 +1,11 @@
 import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
-import { Button, Avatar, Image, message } from 'antd';
+import { Button, Avatar, Image, message, Input } from 'antd';
 import { AiOutlineLogout, AiFillClockCircle } from 'react-icons/ai';
 import { FaHome } from 'react-icons/fa';
+import { BsCameraVideo, BsArrowRightShort } from 'react-icons/bs';
+import { MdGroups } from 'react-icons/md';
+import { IoMdChatbubbles } from 'react-icons/io';
 import { ClientContext } from '../../context';
 import Logo from '../../assets/logoDarkTransparentHorizhontal.png';
 
@@ -72,6 +75,15 @@ const HomeWrapper = styled.div`
   position: relative;
 `;
 
+const Heading = styled.span`
+  font-family: 'Sora', sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+  color: #000411;
+  display: flex;
+  align-items: center;
+`;
+
 const CurrentRoute = styled.div`
   height: 80px;
   display: flex;
@@ -81,7 +93,6 @@ const CurrentRoute = styled.div`
   color: #160c28;
   font-size: 25px;
   font-weight: 600;
-  border-bottom: 3px solid #160c28;
   margin-right: 50px;
   cursor: pointer;
 `;
@@ -136,12 +147,114 @@ const BottomContainer = styled.div`
   .rightContainer {
     width: 74%;
     height: 100%;
+    padding: 30px;
+    display: grid;
+    grid-template-columns: 48.5% 48.5%;
+    column-gap: 3%;
+
+    .left {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      .option {
+        height: 47%;
+        width: 100%;
+        border-radius: 20px;
+        background-color: #aeb7b3;
+        padding: 25px 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: top;
+        align-items: center;
+
+        .content {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: top;
+          width: 100%;
+        }
+      }
+    }
+
+    .right {
+      border-radius: 20px;
+      background-color: #aeb7b3;
+      display: flex;
+      padding: 30px;
+      flex-direction: column;
+      justify-content: top;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+  }
+`;
+
+const StyledInput = styled(Input)`
+  width: 100%;
+  font-size: 17px;
+  outline: none;
+  border-color: #160c28;
+  border: 2px solid #160c28;
+  border-radius: 10px;
+  background: #e1efe6;
+  font-family: 'Sora', sans-serif;
+  margin-bottom: 10px;
+
+  &:hover,
+  &:focus,
+  &:active {
+    color: #160c28;
+    background: #e1efe6;
+    border: 3px solid #160c28;
+    box-shadow: none;
+  }
+`;
+
+const SubHeading = styled.p`
+  font-family: 'Sora', sans-serif;
+  color: #160c28;
+  font-size: 18px;
+  font-weight: 600;
+  width: 99%;
+  text-align: left;
+  margin-top: 20px;
+  margin-bottom: 10px;
+`;
+
+const StyledSubmitButton = styled(Button)`
+  height: 40px;
+  border-radius: 20px;
+  font-family: 'Sora', sans-serif;
+  background: #efcb68;
+  color: #160c28;
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover,
+  &:focus,
+  &:active {
+    color: #160c28;
+    background: #efcb68;
+    border-color: unset;
+  }
+
+  &:hover {
+    border: 3px solid #160c28;
   }
 `;
 
 const HomePage = () => {
   const context = useContext(ClientContext);
   const { user, signOutUser } = context;
+  const [newMeetName, setNewMeetName] = useState('');
+  const [joinMeetId, setJoinMeetId] = useState('');
   return (
     <Wrapper>
       <HomeWrapper>
@@ -152,8 +265,8 @@ const HomePage = () => {
               &nbsp;Home
             </CurrentRoute>
             <CurrentRoute>
-              <AiFillClockCircle size={30} />
-              &nbsp;Recent Meetings
+              <IoMdChatbubbles size={30} />
+              &nbsp;Messages
             </CurrentRoute>
           </div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -205,7 +318,60 @@ const HomePage = () => {
               <p>Email : {user.email}</p>
             </div>
           </div>
-          <div className="rightContainer" />
+          <div className="rightContainer">
+            <div className="left">
+              <div className="option">
+                <Heading>
+                  <BsCameraVideo size={40} />
+                  &nbsp;&nbsp;Create Meeting
+                </Heading>
+                <div className="content">
+                  <SubHeading>Create your own Meeting</SubHeading>
+                  <StyledInput
+                    value={newMeetName}
+                    onChange={(e) => {
+                      setNewMeetName(e.target.value);
+                    }}
+                    placeholder="Meeting Name (Optional)"
+                  />
+                  <StyledSubmitButton type="default" size="large">
+                    Create
+                    <BsArrowRightShort size={30} />
+                  </StyledSubmitButton>
+                </div>
+              </div>
+              <div className="option">
+                <Heading>
+                  <MdGroups size={40} />
+                  &nbsp;&nbsp;Join Meeting
+                </Heading>
+                <div className="content">
+                  <SubHeading>Join meeting by meet ID</SubHeading>
+                  <StyledInput
+                    value={joinMeetId}
+                    onChange={(e) => {
+                      setJoinMeetId(e.target.value);
+                    }}
+                    placeholder="Meeting ID (Required)"
+                  />
+                  <StyledSubmitButton
+                    disabled={!joinMeetId}
+                    type="default"
+                    size="large"
+                  >
+                    Join
+                    <BsArrowRightShort size={30} />
+                  </StyledSubmitButton>
+                </div>
+              </div>
+            </div>
+            <div className="right">
+              <Heading>
+                <AiFillClockCircle size={30} />
+                &nbsp;Recent Meetings
+              </Heading>
+            </div>
+          </div>
         </BottomContainer>
       </HomeWrapper>
     </Wrapper>

@@ -58,14 +58,6 @@ const LoginWrapper = styled.div`
   }
 `;
 
-const Heading = styled.span`
-  font-family: 'Sora', sans-serif;
-  font-size: 35px;
-  font-weight: 900;
-  margin-top: 30px;
-  color: #2b2b2b;
-`;
-
 const StyledLoginButton = styled(Button)`
   width: 60%;
   height: 70px;
