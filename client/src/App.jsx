@@ -7,6 +7,7 @@ import { ClientContext } from './context';
 import LoginPage from './routes/login';
 import LoadingPage from './routes/loading';
 import Home from './routes/home';
+import Meet from './routes/meet';
 
 function App() {
   const context = useContext(ClientContext);
@@ -44,6 +45,7 @@ function App() {
         <div>
           <Switch>
             <Route exact path="/" component={Home} />
+            <Route exact path="/meet/:meetId" component={Meet} />
           </Switch>
         </div>
       )}
