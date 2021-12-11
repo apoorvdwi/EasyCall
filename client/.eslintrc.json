@@ -19,6 +19,7 @@
   "plugins": ["prettier", "react", "@typescript-eslint"],
   "rules": {
     "no-unused-vars": "off",
+    "no-confusing-arrow": "off",
     "no-nested-ternary": "off",
     "react/jsx-wrap-multilines": "off",
     "jsx-a11y/no-static-element-interactions": "off",

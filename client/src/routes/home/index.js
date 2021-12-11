@@ -1,13 +1,14 @@
 import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
-import { Button, Avatar, Image, message, Input } from 'antd';
-import { AiOutlineLogout, AiFillClockCircle } from 'react-icons/ai';
+import { Button, Avatar, Image, message } from 'antd';
+import { AiOutlineLogout } from 'react-icons/ai';
 import { FaHome } from 'react-icons/fa';
-import { BsCameraVideo, BsArrowRightShort } from 'react-icons/bs';
-import { MdGroups } from 'react-icons/md';
+import { BsFillShareFill } from 'react-icons/bs';
 import { IoMdChatbubbles } from 'react-icons/io';
 import { ClientContext } from '../../context';
 import Logo from '../../assets/logoDarkTransparentHorizhontal.png';
+import { StyledSubmitButton } from './components';
+import HomeView from './views/homeView';
 
 message.config({
   maxCount: 1,
@@ -75,15 +76,6 @@ const HomeWrapper = styled.div`
   position: relative;
 `;
 
-const Heading = styled.span`
-  font-family: 'Sora', sans-serif;
-  font-size: 25px;
-  font-weight: 600;
-  color: #000411;
-  display: flex;
-  align-items: center;
-`;
-
 const CurrentRoute = styled.div`
   height: 80px;
   display: flex;
@@ -95,6 +87,10 @@ const CurrentRoute = styled.div`
   font-weight: 600;
   margin-right: 50px;
   cursor: pointer;
+
+  ${(props) => props.current ? `
+  border-bottom : 4px solid #160c28;
+  ` : ''}
 `;
 
 const BottomContainer = styled.div`
@@ -104,7 +100,7 @@ const BottomContainer = styled.div`
   display: flex;
 
   .leftContainer {
-    width: 26%;
+    width: 24%;
     height: 100%;
     border-right: 1px solid #160c28;
     padding: 20px 0;
@@ -115,13 +111,13 @@ const BottomContainer = styled.div`
 
     .userDetails {
       margin-top: 30px;
-      padding-left: 30px;
+      padding: 0 10px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
 
-      span {
+      .title {
         font-family: 'Sora', sans-serif;
         color: #160c28;
         font-size: 22px;
@@ -134,18 +130,12 @@ const BottomContainer = styled.div`
         color: #160c28;
         font-size: 17px;
         font-weight: 600;
-        margin-bottom: 8px;
-
-        .id {
-          font-size: 15px;
-          font-weight: 600;
-          cursor: pointer;
-        }
+        margin-bottom: 10px;
       }
     }
   }
   .rightContainer {
-    width: 74%;
+    width: 76%;
     height: 100%;
     padding: 30px;
     display: grid;
@@ -193,78 +183,30 @@ const BottomContainer = styled.div`
   }
 `;
 
-const StyledInput = styled(Input)`
-  width: 100%;
-  font-size: 17px;
-  outline: none;
-  border-color: #160c28;
-  border: 2px solid #160c28;
-  border-radius: 10px;
-  background: #e1efe6;
-  font-family: 'Sora', sans-serif;
-  margin-bottom: 10px;
-
-  &:hover,
-  &:focus,
-  &:active {
-    color: #160c28;
-    background: #e1efe6;
-    border: 3px solid #160c28;
-    box-shadow: none;
-  }
-`;
-
-const SubHeading = styled.p`
-  font-family: 'Sora', sans-serif;
-  color: #160c28;
-  font-size: 18px;
-  font-weight: 600;
-  width: 99%;
-  text-align: left;
-  margin-top: 20px;
-  margin-bottom: 10px;
-`;
-
-const StyledSubmitButton = styled(Button)`
-  height: 40px;
-  border-radius: 20px;
-  font-family: 'Sora', sans-serif;
-  background: #efcb68;
-  color: #160c28;
-  font-size: 20px;
-  font-weight: 600;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  &:hover,
-  &:focus,
-  &:active {
-    color: #160c28;
-    background: #efcb68;
-    border-color: unset;
-  }
-
-  &:hover {
-    border: 3px solid #160c28;
-  }
-`;
-
 const HomePage = () => {
   const context = useContext(ClientContext);
   const { user, signOutUser } = context;
-  const [newMeetName, setNewMeetName] = useState('');
-  const [joinMeetId, setJoinMeetId] = useState('');
+  const [view, setView] = useState('home');
   return (
     <Wrapper>
       <HomeWrapper>
         <TopNavBar>
           <div style={{ display: 'flex' }}>
-            <CurrentRoute>
+            <CurrentRoute
+              current={view === 'home'}
+              onClick={() => {
+                setView('home');
+              }}
+            >
               <FaHome size={30} />
               &nbsp;Home
             </CurrentRoute>
-            <CurrentRoute>
+            <CurrentRoute
+              current={view === 'messages'}
+              onClick={() => {
+                setView('messages');
+              }}
+            >
               <IoMdChatbubbles size={30} />
               &nbsp;Messages
             </CurrentRoute>
@@ -300,77 +242,24 @@ const HomePage = () => {
           <div className="leftContainer">
             <img className="logo" alt="logo" src={Logo} />
             <div className="userDetails">
-              <span>User Details</span>
-              <p>
-                ID :{' '}
-                <span
-                  onClick={() => {
-                    navigator.clipboard.writeText(user.id).then(() => {
-                      message.success('User ID copied', 2.5);
-                    });
-                  }}
-                  className="id"
-                >
-                  {user.id}
-                </span>
-              </p>
-              <p>Name : {user.displayName}</p>
-              <p>Email : {user.email}</p>
+              <span className="title">User Details</span>
+              <p>{user.displayName}</p>
+              <p>{user.email}</p>
+              <StyledSubmitButton
+                style={{ marginTop: '10px', width: '70%' }}
+                onClick={() => {
+                  navigator.clipboard.writeText(user.id).then(() => {
+                    message.success('User ID copied', 2.5);
+                  });
+                }}
+              >
+                Share ID&nbsp;&nbsp;
+                <BsFillShareFill size={20} />
+              </StyledSubmitButton>
             </div>
           </div>
           <div className="rightContainer">
-            <div className="left">
-              <div className="option">
-                <Heading>
-                  <BsCameraVideo size={40} />
-                  &nbsp;&nbsp;Create Meeting
-                </Heading>
-                <div className="content">
-                  <SubHeading>Create your own Meeting</SubHeading>
-                  <StyledInput
-                    value={newMeetName}
-                    onChange={(e) => {
-                      setNewMeetName(e.target.value);
-                    }}
-                    placeholder="Meeting Name (Optional)"
-                  />
-                  <StyledSubmitButton type="default" size="large">
-                    Create
-                    <BsArrowRightShort size={30} />
-                  </StyledSubmitButton>
-                </div>
-              </div>
-              <div className="option">
-                <Heading>
-                  <MdGroups size={40} />
-                  &nbsp;&nbsp;Join Meeting
-                </Heading>
-                <div className="content">
-                  <SubHeading>Join meeting by meet ID</SubHeading>
-                  <StyledInput
-                    value={joinMeetId}
-                    onChange={(e) => {
-                      setJoinMeetId(e.target.value);
-                    }}
-                    placeholder="Meeting ID (Required)"
-                  />
-                  <StyledSubmitButton
-                    disabled={!joinMeetId}
-                    type="default"
-                    size="large"
-                  >
-                    Join
-                    <BsArrowRightShort size={30} />
-                  </StyledSubmitButton>
-                </div>
-              </div>
-            </div>
-            <div className="right">
-              <Heading>
-                <AiFillClockCircle size={30} />
-                &nbsp;Recent Meetings
-              </Heading>
-            </div>
+            {view === 'home' ? <HomeView /> : null}
           </div>
         </BottomContainer>
       </HomeWrapper>

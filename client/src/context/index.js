@@ -38,6 +38,7 @@ const StyledNotiButton = styled(Button)`
 const ClientProvider = ({ children }) => {
   const [user, setUser] = useState(() => auth.currentUser);
   const [loading, setLoading] = useState(true);
+  const [meetId, setMeetId] = useState(null);
 
   const openNotification = (existing, current, linkFunction) => {
     const key = `open${Date.now()}`;
@@ -154,6 +155,8 @@ const ClientProvider = ({ children }) => {
         signOutUser,
         loading,
         setLoading,
+        meetId,
+        setMeetId,
       }}
     >
       {children}

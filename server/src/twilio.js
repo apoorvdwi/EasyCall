@@ -7,20 +7,13 @@ const router = express.Router();
 const AccessToken = twilio.jwt.AccessToken;
 const VideoGrant = AccessToken.VideoGrant;
 
-const generateToken = (config) => {
-  return new AccessToken(
+const videoToken = (identity, config) => {
+  const videoGrant = new VideoGrant();
+  const token = new AccessToken(
     config.twilio.accountSid,
     config.twilio.apiKey,
     config.twilio.apiSecret,
   );
-};
-
-const videoToken = (identity, room, config) => {
-  let videoGrant;
-  if (room) videoGrant = new VideoGrant({ room });
-  else videoGrant = new VideoGrant();
-
-  const token = generateToken(config);
   token.addGrant(videoGrant);
   token.identity = identity;
   return token;
@@ -28,14 +21,39 @@ const videoToken = (identity, room, config) => {
 
 router.post('/token', (req, res) => {
   const identity = req.body.identity;
-  const room = req.body.room;
-  const token = videoToken(identity, room, config);
-  res.set('Content-Type', 'application/json');
-  res.send(
-    JSON.stringify({
-      token: token.toJwt(),
-    }),
-  );
+  const token = videoToken(identity, config);
+  res.send({
+    accessToken: token.toJwt(),
+  });
+});
+
+router.post('/room-exists', (req, res) => {
+  const roomId = req.body.roomId;
+  const client = twilio(config.twilio.accountSid, config.twilio.authToken);
+
+  console.log('/room-exists', roomId);
+
+  client.video
+    .rooms(roomId)
+    .fetch()
+    .then((room) => {
+      if (room) {
+        res.send({
+          roomExists: true,
+          room,
+        });
+      } else {
+        res.send({
+          roomExists: false,
+        });
+      }
+    })
+    .catch((err) => {
+      res.send({
+        roomExists: false,
+        err,
+      });
+    });
 });
 
 module.exports = router;
