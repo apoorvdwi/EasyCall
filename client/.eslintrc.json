@@ -19,6 +19,8 @@
   "plugins": ["prettier", "react", "@typescript-eslint"],
   "rules": {
     "no-unused-vars": "off",
+    "no-param-reassign":"off",
+    "import/order": "off",
     "no-confusing-arrow": "off",
     "no-nested-ternary": "off",
     "react/jsx-wrap-multilines": "off",

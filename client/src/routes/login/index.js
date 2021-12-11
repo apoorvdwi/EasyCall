@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Button } from 'antd';
+import Button from '@mui/material/Button';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
 import styled from 'styled-components';
 import { ClientContext } from '../../context';
@@ -71,6 +71,7 @@ const StyledLoginButton = styled(Button)`
   justify-content: center;
   align-items: center;
   margin: 10px auto 10px;
+  text-transform: none;
 
   &:hover,
   &:focus, &:active {

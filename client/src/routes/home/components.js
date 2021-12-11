@@ -32,6 +32,7 @@ export const StyledInput = styled(Input)`
   background: #e1efe6;
   font-family: 'Sora', sans-serif;
   margin-bottom: 10px;
+  border: 3px solid transparent;
 
   &:hover,
   &:focus,
@@ -54,6 +55,9 @@ export const StyledSubmitButton = styled(Button)`
   display: flex;
   justify-content: center;
   align-items: center;
+  line-height: unset;
+  border: 3px solid transparent;
+  text-transform: none;
 
   &:hover,
   &:focus,

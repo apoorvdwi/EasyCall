@@ -37,6 +37,7 @@ const HomeView = () => {
           horizontal: 'center',
         },
         TransitionComponent: Collapse,
+        variant: 'error',
       });
     }
   };

@@ -1,5 +1,6 @@
 import React, { useState, createContext, useEffect } from 'react';
-import { Button, notification } from 'antd';
+import { notification } from 'antd';
+import Button from '@mui/material/Button';
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -21,6 +22,7 @@ const StyledNotiButton = styled(Button)`
   justify-content: center;
   align-items: center;
   border-color: unset;
+  text-transform: none;
 
   &:hover,
   &:focus,

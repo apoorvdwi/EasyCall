@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
-import { Button, Avatar, Image, message } from 'antd';
 import { AiOutlineLogout } from 'react-icons/ai';
 import { FaHome } from 'react-icons/fa';
 import { BsFillShareFill } from 'react-icons/bs';
@@ -9,10 +8,8 @@ import { ClientContext } from '../../context';
 import Logo from '../../assets/logoDarkTransparentHorizhontal.png';
 import { StyledSubmitButton } from './components';
 import HomeView from './views/homeView';
-
-message.config({
-  maxCount: 1,
-});
+import { useSnackbar } from 'notistack';
+import { Collapse, Button, Avatar } from '@mui/material';
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -37,6 +34,8 @@ const StyledSignoutButton = styled(Button)`
   justify-content: center;
   align-items: center;
   margin-right: 20px;
+  border: 3px solid transparent;
+  text-transform: none;
 
   &:hover,
   &:focus,
@@ -184,6 +183,7 @@ const BottomContainer = styled.div`
 `;
 
 const HomePage = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const context = useContext(ClientContext);
   const { user, signOutUser } = context;
   const [view, setView] = useState('home');
@@ -224,16 +224,11 @@ const HomePage = () => {
             </StyledSignoutButton>
             <Avatar
               size={55}
+              sx={{ width: 55, height: 55 }}
               src={
-                <Image
-                  preview={false}
-                  src={
-                    user.userImage
-                      ? user.userImage
-                      : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
-                  }
-                  style={{ width: 55 }}
-                />
+                user.userImage
+                  ? user.userImage
+                  : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
               }
             />
           </div>
@@ -249,7 +244,14 @@ const HomePage = () => {
                 style={{ marginTop: '10px', width: '70%' }}
                 onClick={() => {
                   navigator.clipboard.writeText(user.id).then(() => {
-                    message.success('User ID copied', 2.5);
+                    enqueueSnackbar('User ID copied', {
+                      anchorOrigin: {
+                        vertical: 'top',
+                        horizontal: 'center',
+                      },
+                      TransitionComponent: Collapse,
+                      variant: 'success',
+                    });
                   });
                 }}
               >
