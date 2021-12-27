@@ -4,7 +4,7 @@ import { AiOutlineLogout } from 'react-icons/ai';
 import { FaHome } from 'react-icons/fa';
 import { BsFillShareFill } from 'react-icons/bs';
 import { IoMdChatbubbles } from 'react-icons/io';
-import { ClientContext } from '../../context';
+import { UserContext } from '../../context/userContext';
 import Logo from '../../assets/logoDarkTransparentHorizhontal.png';
 import { StyledSubmitButton } from './components';
 import HomeView from './views/homeView';
@@ -57,7 +57,7 @@ const TopNavBar = styled.div`
   height: 80px;
   border-top-right-radius: 20px;
   border-top-left-radius: 20px;
-  border-bottom: 2px solid #000411;
+  border-bottom: 3px solid #000411;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -101,7 +101,7 @@ const BottomContainer = styled.div`
   .leftContainer {
     width: 24%;
     height: 100%;
-    border-right: 1px solid #160c28;
+    border-right: 3px solid #160c28;
     padding: 20px 0;
 
     .logo {
@@ -184,8 +184,8 @@ const BottomContainer = styled.div`
 
 const HomePage = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const context = useContext(ClientContext);
-  const { user, signOutUser } = context;
+  const userContext = useContext(UserContext);
+  const { user, signOutUser } = userContext;
   const [view, setView] = useState('home');
   return (
     <Wrapper>

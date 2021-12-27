@@ -56,6 +56,7 @@
     "postcss-preset-env": "6.7.0",
     "postcss-safe-parser": "5.0.2",
     "prompts": "2.4.0",
+    "randomstring": "^1.2.1",
     "react": "^17.0.2",
     "react-app-polyfill": "^2.0.0",
     "react-dev-utils": "^11.0.3",
@@ -85,7 +86,7 @@
     "start": "set HTTPS=true && node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "pretest": "eslint src/*.js src/**/*.js src/**/*.jsx config/**/*.js config/*.js scripts/*.js --fix"
+    "pretest": "eslint src config scripts --ext .js,.jsx --fix"
   },
   "eslintConfig": {
     "extends": [

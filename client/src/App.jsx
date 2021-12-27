@@ -3,15 +3,15 @@ import { onSnapshot } from 'firebase/firestore';
 import { Switch, Route } from 'react-router-dom';
 import { auth, createUserProfileDocument } from './firebase';
 import './App.css';
-import { ClientContext } from './context';
+import { UserContext } from './context/userContext';
 import LoginPage from './routes/login';
 import LoadingPage from './routes/loading';
 import Home from './routes/home';
 import Meet from './routes/meet';
 
 function App() {
-  const context = useContext(ClientContext);
-  const { user, setUser, loading, setLoading } = context;
+  const userContext = useContext(UserContext);
+  const { user, setUser, loading, setLoading } = userContext;
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {

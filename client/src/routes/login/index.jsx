@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import Button from '@mui/material/Button';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
 import styled from 'styled-components';
-import { ClientContext } from '../../context';
+import { UserContext } from '../../context/userContext';
 import './styles.scss';
 import Logo from '../../assets/logoDarkTransparentHorizhontal.png';
 import VideoCall from '../../assets/Illustrations/home.png';
@@ -95,8 +95,8 @@ const SubHeading = styled.span`
 `;
 
 const LoginPage = () => {
-  const context = useContext(ClientContext);
-  const { signInWithGoogle, signInWithGithub } = context;
+  const userContext = useContext(UserContext);
+  const { signInWithGoogle, signInWithGithub } = userContext;
   return (
     <Wrapper>
       <LoginWrapper>

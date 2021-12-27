@@ -1,6 +1,6 @@
 import React, { useState, createContext, useEffect } from 'react';
 import { notification } from 'antd';
-import Button from '@mui/material/Button';
+import { Button } from '@mui/material';
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -13,7 +13,7 @@ import {
 import styled from 'styled-components';
 import { auth, db } from '../firebase';
 
-const ClientContext = createContext();
+const UserContext = createContext();
 
 const StyledNotiButton = styled(Button)`
   font-family: 'Sora', sans-serif;
@@ -23,6 +23,8 @@ const StyledNotiButton = styled(Button)`
   align-items: center;
   border-color: unset;
   text-transform: none;
+  border: 1px solid transparent;
+  padding: 5px 10px;
 
   &:hover,
   &:focus,
@@ -37,10 +39,9 @@ const StyledNotiButton = styled(Button)`
   }
 `;
 
-const ClientProvider = ({ children }) => {
+const UserProvider = ({ children }) => {
   const [user, setUser] = useState(() => auth.currentUser);
   const [loading, setLoading] = useState(true);
-  const [meetId, setMeetId] = useState(null);
 
   const openNotification = (existing, current, linkFunction) => {
     const key = `open${Date.now()}`;
@@ -66,6 +67,12 @@ const ClientProvider = ({ children }) => {
       onClose: () => {
         notification.close(key);
         setLoading(false);
+      },
+      style: {
+        background: '#E1EFE6',
+        borderRadius: '10px',
+        fontFamily: 'Sora, sans-serif',
+        color: '#160c28',
       },
     });
     setTimeout(() => {
@@ -148,7 +155,7 @@ const ClientProvider = ({ children }) => {
   };
 
   return (
-    <ClientContext.Provider
+    <UserContext.Provider
       value={{
         user,
         setUser,
@@ -157,13 +164,11 @@ const ClientProvider = ({ children }) => {
         signOutUser,
         loading,
         setLoading,
-        meetId,
-        setMeetId,
       }}
     >
       {children}
-    </ClientContext.Provider>
+    </UserContext.Provider>
   );
 };
 
-export { ClientContext, ClientProvider };
+export { UserContext, UserProvider };

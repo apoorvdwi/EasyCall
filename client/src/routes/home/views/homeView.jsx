@@ -7,7 +7,9 @@ import { useHistory } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
 import { checkIfRoomExists } from '../../../utils/twilioUtils';
-import { ClientContext } from '../../../context';
+import { UserContext } from '../../../context/userContext';
+import { MeetingContext } from '../../../context/meetingContext';
+import { generateWhiteBoardUrl } from '../../../utils';
 
 import {
   Heading,
@@ -16,21 +18,32 @@ import {
   StyledSubmitButton,
 } from '../components';
 
+import { db } from '../../../firebase';
+import { doc, setDoc } from 'firebase/firestore';
+
 const HomeView = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const context = useContext(ClientContext);
-  const { setMeetId } = context;
+  const userContext = useContext(UserContext);
+  const meetingContext = useContext(MeetingContext);
+  const { setMeetId } = meetingContext;
+  const { user } = userContext;
   const [newMeetName, setNewMeetName] = useState('');
   const [joinMeetId, setJoinMeetId] = useState('');
+  const [localLoading, setLocalLoading] = useState({
+    create: false,
+    join: false,
+  });
   const history = useHistory();
 
-  const joinMeeting = async (roomId) => {
+  const joinMeeting = async (meetingId) => {
     // check if rooms exists and join the room
-    const roomExistsData = await checkIfRoomExists(roomId);
+    setLocalLoading({ ...localLoading, join: true });
+    const roomExistsData = await checkIfRoomExists(meetingId);
     if (roomExistsData.roomExists) {
-      setMeetId(roomId);
-      history.push(`/meet/${roomId}`);
+      setMeetId(meetingId);
+      history.push(`/meet/${meetingId}`);
     } else {
+      setLocalLoading({ ...localLoading, join: false });
       enqueueSnackbar('Room requested was not found !!', {
         anchorOrigin: {
           vertical: 'top',
@@ -42,11 +55,21 @@ const HomeView = () => {
     }
   };
 
-  const createMeeting = () => {
+  const createMeeting = async () => {
     // create room and join the room
-    const roomId = uuidv4();
-    setMeetId(roomId);
-    history.push(`/meet/${roomId}`);
+    setLocalLoading({ ...localLoading, create: true });
+    const meetingId = uuidv4();
+    const meetingRef = doc(db, 'rooms', meetingId);
+    const whiteBoardUrl = generateWhiteBoardUrl();
+    await setDoc(meetingRef, {
+      meetingTitle: newMeetName,
+      createdAt: new Date(),
+      createdBy: user.id,
+      whiteBoardUrl,
+    });
+    setMeetId(meetingId);
+    setLocalLoading({ ...localLoading, create: false });
+    history.push(`/meet/${meetingId}`);
   };
 
   return (
@@ -66,7 +89,14 @@ const HomeView = () => {
               }}
               placeholder="Meeting Name (Optional)"
             />
-            <StyledSubmitButton type="default" size="large">
+            <StyledSubmitButton
+              loading={localLoading.create}
+              onClick={() => {
+                createMeeting();
+              }}
+              type="default"
+              size="large"
+            >
               Create
               <BsArrowRightShort size={30} />
             </StyledSubmitButton>
@@ -87,6 +117,7 @@ const HomeView = () => {
               placeholder="Meeting ID (Required)"
             />
             <StyledSubmitButton
+              loading={localLoading.join}
               onClick={() => {
                 joinMeeting(joinMeetId);
               }}
