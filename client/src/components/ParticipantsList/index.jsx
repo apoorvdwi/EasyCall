@@ -58,8 +58,8 @@ const ParticipantList = (props) => {
   return (
     <Wrapper>
       <Heading>Participants</Heading>
-      {participants.map((participant) => (
-        <Participant>{participant}</Participant>
+      {participants.map((participant, index) => (
+        <Participant key={index}>{participant}</Participant>
       ))}
     </Wrapper>
   );

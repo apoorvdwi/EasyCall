@@ -83,6 +83,7 @@ const UserProvider = ({ children }) => {
   const signInWithGoogle = async () => {
     let existingEmail = null;
     let pendingCred = null;
+    let err = null;
     const provider = new GoogleAuthProvider();
     provider.addScope('profile');
     provider.addScope('email');
@@ -107,16 +108,21 @@ const UserProvider = ({ children }) => {
             },
           );
         });
+      } else {
+        err = error;
       }
       console.log(error);
       setLoading(false);
     });
-    setLoading(true);
+    if (!err) {
+      setLoading(true);
+    }
   };
 
   const signInWithGithub = async () => {
     let existingEmail = null;
     let pendingCred = null;
+    let err = null;
     const provider = new GithubAuthProvider();
     auth.useDeviceLanguage();
     await signInWithPopup(auth, provider).catch((error) => {
@@ -139,11 +145,15 @@ const UserProvider = ({ children }) => {
             },
           );
         });
+      } else {
+        err = error;
       }
       console.log(error);
       setLoading(false);
     });
-    setLoading(true);
+    if (!err) {
+      setLoading(true);
+    }
   };
 
   const signOutUser = async () => {

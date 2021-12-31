@@ -27,30 +27,30 @@ router.post('/token', (req, res) => {
   });
 });
 
-router.post('/room-exists', (req, res) => {
-  const roomId = req.body.roomId;
+router.post('/meet-exists', (req, res) => {
+  const meetId = req.body.meetId;
   const client = twilio(config.twilio.accountSid, config.twilio.authToken);
 
-  console.log('/room-exists', roomId);
+  console.log('/meet-exists', meetId);
 
   client.video
-    .rooms(roomId)
+    .rooms(meetId)
     .fetch()
-    .then((room) => {
-      if (room) {
+    .then((meeting) => {
+      if (meeting) {
         res.send({
-          roomExists: true,
-          room,
+          meetingExists: true,
+          meeting,
         });
       } else {
         res.send({
-          roomExists: false,
+          meetingExists: false,
         });
       }
     })
     .catch((err) => {
       res.send({
-        roomExists: false,
+        meetingExists: false,
         err,
       });
     });

@@ -6,7 +6,7 @@ import { MdGroups } from 'react-icons/md';
 import { useHistory } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
-import { checkIfRoomExists } from '../../../utils/twilioUtils';
+import { checkIfMeetingExists } from '../../../utils/twilioUtils';
 import { UserContext } from '../../../context/userContext';
 import { MeetingContext } from '../../../context/meetingContext';
 import { generateWhiteBoardUrl } from '../../../utils';
@@ -36,10 +36,10 @@ const HomeView = () => {
   const history = useHistory();
 
   const joinMeeting = async (meetingId) => {
-    // check if rooms exists and join the room
+    // check if meeting exists and join the meeting
     setLocalLoading({ ...localLoading, join: true });
-    const roomExistsData = await checkIfRoomExists(meetingId);
-    if (roomExistsData.roomExists) {
+    const meetingExistsData = await checkIfMeetingExists(meetingId);
+    if (meetingExistsData.meetingExists) {
       setMeetId(meetingId);
       history.push(`/meet/${meetingId}`);
     } else {
@@ -56,10 +56,10 @@ const HomeView = () => {
   };
 
   const createMeeting = async () => {
-    // create room and join the room
+    // create meeting and join the meeting
     setLocalLoading({ ...localLoading, create: true });
     const meetingId = uuidv4();
-    const meetingRef = doc(db, 'rooms', meetingId);
+    const meetingRef = doc(db, 'meetings', meetingId);
     const whiteBoardUrl = generateWhiteBoardUrl();
     await setDoc(meetingRef, {
       meetingTitle: newMeetName,

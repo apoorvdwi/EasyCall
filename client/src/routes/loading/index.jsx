@@ -4,7 +4,7 @@ import { ReactComponent as Loader } from '../../assets/loader.svg';
 
 const Wrapper = styled.div`
   width: 100vw;
-  padding: 45px;
+  padding: 25px;
   height: 100vh;
   display: flex;
   justify-content: center;

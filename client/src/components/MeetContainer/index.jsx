@@ -17,39 +17,10 @@ const Wrapper = styled.div`
 `;
 
 const MeetContainer = (props) => {
-  const [optionState, setOptionState] = useState({
-    audio: false,
-    video: false,
-    screenshare: false,
-  });
   return (
     <Wrapper infoView={props.infoView}>
-      <button
-        onClick={() => {
-          setOptionState({ ...optionState, audio: !optionState.audio });
-        }}
-      >
-        Toggle Audio
-      </button>
-      <button
-        onClick={() => {
-          setOptionState({ ...optionState, video: !optionState.video });
-        }}
-      >
-        Toggle Video
-      </button>
-      <button
-        onClick={() => {
-          setOptionState({
-            ...optionState,
-            screenshare: !optionState.screenshare,
-          });
-        }}
-      >
-        Toggle Screenshare
-      </button>
       {props.children}
-      <MeetSettingsBar {...optionState} />
+      <MeetSettingsBar />
     </Wrapper>
   );
 };

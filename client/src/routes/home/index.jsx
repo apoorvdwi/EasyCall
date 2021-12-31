@@ -13,7 +13,7 @@ import { Collapse, Button, Avatar } from '@mui/material';
 
 const Wrapper = styled.div`
   width: 100vw;
-  padding: 45px;
+  padding: 25px;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -34,7 +34,7 @@ const StyledSignoutButton = styled(Button)`
   justify-content: center;
   align-items: center;
   margin-right: 20px;
-  border: 3px solid transparent;
+  border: 2px solid transparent;
   text-transform: none;
 
   &:hover,
@@ -46,7 +46,7 @@ const StyledSignoutButton = styled(Button)`
   }
 
   &:hover {
-    border: 3px solid #160c28;
+    border: 2px solid #160c28;
   }
 `;
 
@@ -152,7 +152,7 @@ const BottomContainer = styled.div`
         width: 100%;
         border-radius: 20px;
         background-color: #aeb7b3;
-        padding: 25px 30px;
+        padding: 20px 30px;
         display: flex;
         flex-direction: column;
         justify-content: top;

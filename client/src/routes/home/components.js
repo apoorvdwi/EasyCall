@@ -18,7 +18,7 @@ export const SubHeading = styled.p`
   font-weight: 600;
   width: 99%;
   text-align: left;
-  margin-top: 20px;
+  margin-top: 10px;
   margin-bottom: 10px;
 `;
 
@@ -27,19 +27,18 @@ export const StyledInput = styled(Input)`
   font-size: 17px;
   outline: none;
   border-color: #160c28;
-  border: 2px solid #160c28;
   border-radius: 10px;
   background: #e1efe6;
   font-family: 'Sora', sans-serif;
-  margin-bottom: 10px;
-  border: 3px solid transparent;
+  margin-bottom: 15px;
+  border: 2px solid transparent;
 
   &:hover,
   &:focus,
   &:active {
     color: #160c28;
     background: #e1efe6;
-    border: 3px solid #160c28;
+    border: 2px solid #160c28;
     box-shadow: none;
   }
 `;
@@ -56,7 +55,7 @@ export const StyledSubmitButton = styled(Button)`
   justify-content: center;
   align-items: center;
   line-height: unset;
-  border: 3px solid transparent;
+  border: 2px solid transparent;
   text-transform: none;
 
   &:hover,
@@ -68,6 +67,6 @@ export const StyledSubmitButton = styled(Button)`
   }
 
   &:hover {
-    border: 3px solid #160c28;
+    border: 2px solid #160c28;
   }
 `;

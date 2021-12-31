@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Tooltip } from 'antd';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import {
   BsInfoCircle,
@@ -17,6 +18,7 @@ import {
 import { BiChalkboard } from 'react-icons/bi';
 import { IoIosPeople, IoMdChatboxes } from 'react-icons/io';
 import { IoColorFilterOutline } from 'react-icons/io5';
+import { MeetingContext } from '../../context/meetingContext';
 
 const Wrapper = styled.div`
   width: 60px;
@@ -34,6 +36,9 @@ const Wrapper = styled.div`
 `;
 
 const MeetSettingsBar = (props) => {
+  const meetingContext = useContext(MeetingContext);
+  const history = useHistory();
+  const { meeting, endMeeting } = meetingContext;
   const [options] = useState([
     {
       name: 'info',
@@ -71,11 +76,11 @@ const MeetSettingsBar = (props) => {
       icon: <BiChalkboard size={30} />,
       description: 'Open Whiteboard',
     },
-    {
-      name: 'filters',
-      icon: <IoColorFilterOutline size={30} />,
-      description: 'Apply Video Filters',
-    },
+    // {
+    //   name: 'filters',
+    //   icon: <IoColorFilterOutline size={30} />,
+    //   description: 'Apply Video Filters',
+    // },
     {
       name: 'participants',
       icon: <IoIosPeople size={30} />,
@@ -90,6 +95,10 @@ const MeetSettingsBar = (props) => {
       name: 'endcall',
       icon: <MdOutlineCallEnd size={30} />,
       description: 'End Call',
+      onClick: () => {
+        endMeeting();
+        history.replace('/');
+      },
     },
   ]);
 
@@ -106,8 +115,12 @@ const MeetSettingsBar = (props) => {
             : option.disabledDescription;
         }
         return (
-          <Tooltip placement="left" title={description}>
-            <span style={{ width: '100%' }} key={index}>
+          <Tooltip key={index} placement="left" title={description}>
+            <span
+              onClick={option.onClick}
+              style={{ width: '100%', cursor: 'pointer' }}
+              key={index}
+            >
               {icon}
             </span>
           </Tooltip>

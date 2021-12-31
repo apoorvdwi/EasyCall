@@ -9,7 +9,7 @@ import VideoCall from '../../assets/Illustrations/home.png';
 
 const Wrapper = styled.div`
   width: 100vw;
-  padding: 45px;
+  padding: 25px;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -32,10 +32,10 @@ const LoginWrapper = styled.div`
     display: flex;
     height: 100%;
     width: 50%;
-    padding: 30px;
+    padding: 0 30px;
     flex-direction: column;
     align-items: center;
-    justify-content: top;
+    justify-content: center;
 
     .logo {
       height: 120px;
@@ -72,9 +72,11 @@ const StyledLoginButton = styled(Button)`
   align-items: center;
   margin: 10px auto 10px;
   text-transform: none;
+  border: 3px solid transparent;
 
   &:hover,
-  &:focus, &:active {
+  &:focus,
+  &:active {
     color: #160c28;
     background: #efcb68;
     border-color: unset;
