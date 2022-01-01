@@ -1,16 +1,23 @@
 import React, { useState, createContext, useEffect, useCallback } from 'react';
 import { connect, LocalAudioTrack, LocalVideoTrack } from 'twilio-video';
+import { getMeetingDetails } from '../utils/firebaseUtils';
 
 const MeetingContext = createContext();
 
 const MeetingProvider = ({ children }) => {
   const [meetId, setMeetId] = useState(null);
+  const [meetingDetails, setMeetingDetails] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
   const [meeting, setMeeting] = useState(null);
   const [isConnecting, setIsConnecting] = useState(true);
   const [participants, setParticipants] = useState([]);
+  const [participantUserDetails, setParticipantUserDetails] = useState([]);
   const [userAudio, setUserAudio] = useState(true);
   const [userVideo, setUserVideo] = useState(true);
+
+  useEffect(() => {
+    setMeetingDetails(getMeetingDetails(meetId));
+  }, [meeting]);
 
   const endMeeting = useCallback(() => {
     setMeeting((prevMeeting) => {
@@ -36,11 +43,7 @@ const MeetingProvider = ({ children }) => {
     });
   };
 
-  const connectToMeeting = async (
-    accessToken,
-    meetId = 'test-room',
-    setMeeting,
-  ) => {
+  const connectToMeeting = async (accessToken, meetId = 'test-room') => {
     const constraints = {
       audio: true,
       video: {
@@ -58,7 +61,7 @@ const MeetingProvider = ({ children }) => {
       .then(async (stream) => {
         const audioTrack = new LocalAudioTrack(stream.getAudioTracks()[0]);
         const videoTrack = new LocalVideoTrack(stream.getVideoTracks()[0]);
-
+        window.localStream = stream;
         const tracks = [audioTrack, videoTrack];
 
         const meeting = await connect(accessToken, {
@@ -82,6 +85,34 @@ const MeetingProvider = ({ children }) => {
       });
   };
 
+  const toggleUserAudio = () => {
+    if (!meeting || !meeting.localParticipant) return;
+    if (userAudio) {
+      meeting.localParticipant.audioTracks.forEach((publication) => {
+        publication.track.disable();
+      });
+    } else {
+      meeting.localParticipant.audioTracks.forEach((publication) => {
+        publication.track.enable();
+      });
+    }
+    setUserAudio(!userAudio);
+  };
+
+  const toggleUserVideo = () => {
+    if (!meeting || !meeting.localParticipant) return;
+    if (userVideo) {
+      meeting.localParticipant.videoTracks.forEach((publication) => {
+        publication.track.disable();
+      });
+    } else {
+      meeting.localParticipant.videoTracks.forEach((publication) => {
+        publication.track.enable();
+      });
+    }
+    setUserVideo(!userVideo);
+  };
+
   const participantConnected = (participant) => {
     // when a new participant gets connected
     setParticipants((prevParticipants) => [...prevParticipants, participant]);
@@ -102,6 +133,7 @@ const MeetingProvider = ({ children }) => {
         accessToken,
         setAccessToken,
         meeting,
+        meetingDetails,
         setMeeting,
         endMeeting,
         leaveMeeting,
@@ -116,6 +148,10 @@ const MeetingProvider = ({ children }) => {
         setUserAudio,
         userVideo,
         setUserVideo,
+        toggleUserAudio,
+        toggleUserVideo,
+        participantUserDetails,
+        setParticipantUserDetails,
       }}
     >
       {children}

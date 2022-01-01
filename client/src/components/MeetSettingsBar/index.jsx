@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Tooltip } from 'antd';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -11,8 +11,8 @@ import {
   BsRecordCircleFill,
 } from 'react-icons/bs';
 import {
-  MdScreenShare,
-  MdStopScreenShare,
+  MdPresentToAll,
+  MdCancelPresentation,
   MdOutlineCallEnd,
 } from 'react-icons/md';
 import { BiChalkboard } from 'react-icons/bi';
@@ -33,12 +33,38 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
+
+  .control {
+    width: 100%;
+    cursor: pointer;
+    ${(props) =>
+    props.disabledProp
+      ? `
+  pointer-events: none;
+  cursor: not-allowed;
+  `
+      : ''}
+  }
 `;
 
 const MeetSettingsBar = (props) => {
   const meetingContext = useContext(MeetingContext);
   const history = useHistory();
-  const { meeting, endMeeting } = meetingContext;
+  const {
+    meeting,
+    endMeeting,
+    userAudio: audio,
+    userVideo: video,
+    toggleUserAudio,
+    toggleUserVideo,
+  } = meetingContext;
+
+  const [disabled, setDisabled] = useState(true);
+
+  useEffect(() => {
+    if (meeting) setDisabled(false);
+  }, [meeting]);
+
   const [options] = useState([
     {
       name: 'info',
@@ -61,8 +87,8 @@ const MeetSettingsBar = (props) => {
     },
     {
       name: 'screenshare',
-      icon: <MdScreenShare size={30} />,
-      disabledIcon: <MdStopScreenShare size={30} />,
+      icon: <MdPresentToAll size={30} />,
+      disabledIcon: <MdCancelPresentation size={30} />,
       description: 'Disable Screenshare',
       disabledDescription: 'Enable Screenshare',
     },
@@ -103,29 +129,70 @@ const MeetSettingsBar = (props) => {
   ]);
 
   return (
-    <Wrapper>
-      {options.map((option, index) => {
-        const name = option.name;
-        let icon = option.icon;
-        let description = option.description;
-        if (name in props) {
-          icon = props[name] ? option.icon : option.disabledIcon;
-          description = props[name]
-            ? option.description
-            : option.disabledDescription;
-        }
-        return (
-          <Tooltip key={index} placement="left" title={description}>
-            <span
-              onClick={option.onClick}
-              style={{ width: '100%', cursor: 'pointer' }}
-              key={index}
-            >
-              {icon}
-            </span>
-          </Tooltip>
-        );
-      })}
+    <Wrapper disabledProp={disabled}>
+      <Tooltip placement="left" title="Meeting Info">
+        <span className="control">
+          <BsInfoCircle size={30} />
+        </span>
+      </Tooltip>
+
+      <Tooltip placement="left" title={`${audio ? 'Disable' : 'Enable'} Audio`}>
+        <span className="control" onClick={toggleUserAudio}>
+          {audio ? <BsMicFill size={30} /> : <BsMicMuteFill size={30} />}
+        </span>
+      </Tooltip>
+
+      <Tooltip placement="left" title={`${video ? 'Disable' : 'Enable'} Video`}>
+        <span className="control" onClick={toggleUserVideo}>
+          {video ? (
+            <BsCameraVideoFill size={30} />
+          ) : (
+            <BsCameraVideoOffFill size={30} />
+          )}
+        </span>
+      </Tooltip>
+
+      <Tooltip placement="left" title="Share Screen">
+        <span className="control" onClick={() => {}}>
+          <MdPresentToAll size={30} />
+        </span>
+      </Tooltip>
+
+      <Tooltip placement="left" title="Record Meeting">
+        <span className="control" onClick={() => {}}>
+          <BsRecordCircleFill size={30} />
+        </span>
+      </Tooltip>
+
+      <Tooltip placement="left" title="WhiteBoard">
+        <span className="control" onClick={() => {}}>
+          <BiChalkboard size={30} />
+        </span>
+      </Tooltip>
+
+      <Tooltip placement="left" title="View Participants">
+        <span className="control" onClick={() => {}}>
+          <IoIosPeople size={30} />
+        </span>
+      </Tooltip>
+
+      <Tooltip placement="left" title="Chat">
+        <span className="control" onClick={() => {}}>
+          <IoMdChatboxes size={30} />
+        </span>
+      </Tooltip>
+
+      <Tooltip placement="left" title="End Call">
+        <span
+          className="control"
+          onClick={() => {
+            endMeeting();
+            history.replace('/');
+          }}
+        >
+          <MdOutlineCallEnd size={30} />
+        </span>
+      </Tooltip>
     </Wrapper>
   );
 };

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
+import { MeetingContext } from '../../context/meetingContext';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -50,16 +51,15 @@ const Participant = styled.div`
 `;
 
 const ParticipantList = (props) => {
-  const participants = [
-    'Apoorv',
-    'Mona',
-    'Abhishek',
-  ];
+  const meetingContext = useContext(MeetingContext);
+  const { participantUserDetails } = meetingContext;
   return (
     <Wrapper>
       <Heading>Participants</Heading>
-      {participants.map((participant, index) => (
-        <Participant key={index}>{participant}</Participant>
+      {participantUserDetails.map((participant) => (
+        <Participant key={participant.id}>
+          {participant.displayName}
+        </Participant>
       ))}
     </Wrapper>
   );

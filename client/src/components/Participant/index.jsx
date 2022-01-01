@@ -1,7 +1,15 @@
 import React, { useContext, useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { MeetingContext } from '../../context/meetingContext';
+import { UserContext } from '../../context/userContext';
 import { trackpubsToTracks } from '../../utils/twilioUtils';
+import { getParticipantData } from '../../utils/firebaseUtils';
+import {
+  BsMicFill,
+  BsMicMuteFill,
+  BsCameraVideoFill,
+  BsCameraVideoOffFill,
+} from 'react-icons/bs';
 
 const ParticipantVideo = styled.div`
   height: min-content;
@@ -37,6 +45,10 @@ const StyledAudio = styled.audio``;
 
 const Participant = ({ participant }) => {
   const meetingContext = useContext(MeetingContext);
+  const { setParticipantUserDetails } = meetingContext;
+  const userContext = useContext(UserContext);
+  const { user } = userContext;
+  const [participantUser, setParticipantUser] = useState(null);
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
@@ -45,8 +57,18 @@ const Participant = ({ participant }) => {
   const videoRef = useRef();
   const audioRef = useRef();
 
+  const setParticipantDetailsHelper = async () => {
+    const userDetails = await getParticipantData(participant.identity);
+    setParticipantUser(userDetails);
+    setParticipantUserDetails((prevParticipants) => [
+      ...prevParticipants,
+      userDetails,
+    ]);
+  };
+
   useEffect(() => {
     // initialise basic values for the participants
+    setParticipantDetailsHelper();
     setVideoTracks(trackpubsToTracks(participant.videoTracks));
     setAudioTracks(trackpubsToTracks(participant.audioTracks));
 
@@ -71,6 +93,9 @@ const Participant = ({ participant }) => {
     return () => {
       setVideoTracks([]);
       setAudioTracks([]);
+      setParticipantUserDetails((prevParticipants) =>
+        prevParticipants.filter((p) => p !== participantUser),
+      );
       participant.removeAllListeners();
     };
   }, [participant]);
@@ -141,7 +166,16 @@ const Participant = ({ participant }) => {
         <StyledVideo ref={videoRef} playsInline autoPlay />
       </VideoWrapper>
       <StyledAudio ref={audioRef} autoPlay />
-      <p>{participant.identity}</p>
+      <p>
+        {participantUser && participantUser.displayName}
+        {participantUser && participantUser.id === user.id ? ' (You)' : ''}
+        {isAudioEnabled ? <BsMicFill size={20} /> : <BsMicMuteFill size={20} />}
+        {isVideoEnabled ? (
+          <BsCameraVideoFill size={20} />
+        ) : (
+          <BsCameraVideoOffFill size={20} />
+        )}
+      </p>
     </ParticipantVideo>
   );
 };

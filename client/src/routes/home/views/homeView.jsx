@@ -19,7 +19,7 @@ import {
 } from '../components';
 
 import { db } from '../../../firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
 
 const HomeView = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -68,6 +68,13 @@ const HomeView = () => {
       whiteBoardUrl,
     });
     setMeetId(meetingId);
+    const userRef = doc(db, 'users', user.id);
+    const updatedMeetingData = [
+      ...new Set(user.meetings ? [...user.meetings, meetingId] : [meetingId]),
+    ];
+    await updateDoc(userRef, {
+      meetings: updatedMeetingData,
+    });
     setLocalLoading({ ...localLoading, create: false });
     history.push(`/meet/${meetingId}`);
   };

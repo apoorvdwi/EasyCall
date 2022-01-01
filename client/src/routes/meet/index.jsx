@@ -12,6 +12,9 @@ import { UserContext } from '../../context/userContext';
 import { ReactComponent as Loader } from '../../assets/loader.svg';
 import Participant from '../../components/Participant';
 
+import { db } from '../../firebase';
+import { doc, updateDoc } from 'firebase/firestore';
+
 const Wrapper = styled.div`
   width: 100vw;
   padding: 25px;
@@ -51,34 +54,49 @@ const Meet = (props) => {
     participantDisconnected,
     participants,
     leaveMeeting,
+    endMeeting,
   } = meetingContext;
   const { user } = userContext;
   const history = useHistory();
   const [view, setView] = useState(false);
 
+  const updateUserMeetings = async (meetingId) => {
+    const userRef = doc(db, 'users', user.id);
+    const updatedMeetingData = [
+      ...new Set(user.meetings ? [...user.meetings, meetingId] : [meetingId]),
+    ];
+    await updateDoc(userRef, {
+      meetings: updatedMeetingData,
+    });
+  };
+
   useEffect(() => {
-    const meetIdProp = props.match.params.meetId;
-    // const meetingExistsData = await checkIfMeetingExists(meetIdProp);
-    // if (meetExistsData.meetingExists) {
-    //   setMeetId(meetIdProp);
-    // } else {
-    //   enqueueSnackbar(
-    //     'meeting requested was not found !! Redirecting to Dashboard',
-    //     {
-    //       anchorOrigin: {
-    //         vertical: 'top',
-    //         horizontal: 'center',
-    //       },
-    //       TransitionComponent: Collapse,
-    //       variant: 'error',
-    //     },
-    //   );
-    //   setTimeout(() => {
-    //     history.replace('/');
-    //   }, 2000);
-    // }
-    setMeetId(meetIdProp);
-  }, [props]);
+    const execute = async () => {
+      const meetIdProp = props.match.params.meetId;
+      const meetingExistsData = await checkIfMeetingExists(meetIdProp);
+      if (meetingExistsData.meetingExists) {
+        setMeetId(meetIdProp);
+        await updateUserMeetings(meetIdProp);
+      } else {
+        enqueueSnackbar(
+          'Meeting requested was not found !! Redirecting to Dashboard',
+          {
+            anchorOrigin: {
+              vertical: 'top',
+              horizontal: 'center',
+            },
+            TransitionComponent: Collapse,
+            variant: 'error',
+          },
+        );
+        setTimeout(() => {
+          history.replace('/');
+        }, 2000);
+      }
+    };
+
+    execute();
+  }, []);
 
   useEffect(() => {
     const getAndSetAccessToken = async () => {
@@ -107,8 +125,8 @@ const Meet = (props) => {
   }, []);
 
   useEffect(() => {
-    if (accessToken) {
-      connectToMeeting(accessToken, meetId, setMeeting);
+    if (accessToken && meetId) {
+      connectToMeeting(accessToken, meetId);
     }
   }, [accessToken]);
 
@@ -125,6 +143,27 @@ const Meet = (props) => {
       meeting?.off('participantDisconnected', participantDisconnected);
     };
   }, [meeting]);
+
+  useEffect(() => {
+    const cleanup = (event) => {
+      // cleanup function for call end
+      if (event.persisted) {
+        return;
+      }
+      if (meeting) {
+        endMeeting();
+      }
+    };
+
+    if (meeting) {
+      window.addEventListener('pagehide', cleanup);
+      window.addEventListener('beforeunload', cleanup);
+      return () => {
+        window.removeEventListener('pagehide', cleanup);
+        window.removeEventListener('beforeunload', cleanup);
+      };
+    }
+  }, [meeting, endMeeting]);
 
   const remoteParticipants = participants?.map((participant) => (
     <Participant key={participant.sid} participant={participant} />
