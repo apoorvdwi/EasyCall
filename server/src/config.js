@@ -10,5 +10,5 @@ module.exports = {
   url: {
     client: 'http://localhost:3000',
   },
-  allowedURLs: ['http://localhost:3000'],
+  allowedURLs: ['http://localhost:3000', 'https://easycall.vercel.app'],
 };
