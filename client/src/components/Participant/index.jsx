@@ -13,11 +13,10 @@ import {
 
 const ParticipantVideo = styled.div`
   height: min-content;
-  width: 400px;
   background: #000411;
   border-radius: 10px;
   padding: 5px;
-  margin: 20px;
+  margin: 13px 10px;
 
   p {
     color: #fff;
@@ -27,7 +26,7 @@ const ParticipantVideo = styled.div`
 const VideoWrapper = styled.div`
   width: 100%;
   border-radius: 10px;
-  height: 250px;
+  padding-top: 56.25% !important;
   position: relative;
 `;
 
@@ -39,13 +38,42 @@ const StyledVideo = styled.video`
   width: 100% !important;
   height: 100% !important;
   object-fit: cover;
+  ${(props) =>
+    props.inverted
+      ? `
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+  `
+      : ''}
+`;
+
+const BottomContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 10px 0;
+
+  .name {
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #fff;
+    width: 50px;
+  }
 `;
 
 const StyledAudio = styled.audio``;
 
-const Participant = ({ participant }) => {
+const Participant = ({ participant, me = false }) => {
   const meetingContext = useContext(MeetingContext);
-  const { setParticipantUserDetails } = meetingContext;
+  const { setParticipantUserDetails, participantWidth } = meetingContext;
   const userContext = useContext(UserContext);
   const { user } = userContext;
   const [participantUser, setParticipantUser] = useState(null);
@@ -161,21 +189,29 @@ const Participant = ({ participant }) => {
   }
 
   return (
-    <ParticipantVideo>
+    <ParticipantVideo style={{ width: `${participantWidth}%` }}>
       <VideoWrapper>
-        <StyledVideo ref={videoRef} playsInline autoPlay />
+        <StyledVideo inverted={me} ref={videoRef} playsInline autoPlay />
       </VideoWrapper>
-      <StyledAudio ref={audioRef} autoPlay />
-      <p>
-        {participantUser && participantUser.displayName}
-        {participantUser && participantUser.id === user.id ? ' (You)' : ''}
-        {isAudioEnabled ? <BsMicFill size={20} /> : <BsMicMuteFill size={20} />}
-        {isVideoEnabled ? (
-          <BsCameraVideoFill size={20} />
-        ) : (
-          <BsCameraVideoOffFill size={20} />
-        )}
-      </p>
+      <StyledAudio ref={audioRef} autoPlay muted={me} />
+      <BottomContainer>
+        <span className="name">
+          {participantUser && participantUser.displayName}
+          {participantUser && participantUser.id === user.id ? ' (You)' : ''}
+        </span>
+        <div className="controls">
+          {isAudioEnabled ? (
+            <BsMicFill size={20} />
+          ) : (
+            <BsMicMuteFill size={20} />
+          )}
+          {isVideoEnabled ? (
+            <BsCameraVideoFill size={20} />
+          ) : (
+            <BsCameraVideoOffFill size={20} />
+          )}
+        </div>
+      </BottomContainer>
     </ParticipantVideo>
   );
 };

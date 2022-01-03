@@ -5,7 +5,7 @@ import { Collapse } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import MeetContainer from '../../components/MeetContainer';
 import MeetInfo from '../../components/MeetInfo';
-import { checkIfMeetingExists, getAccessToken } from '../../utils/twilioUtils';
+import { getAccessToken } from '../../utils/twilioUtils';
 import WhiteBoard from '../../components/Whiteboard';
 import { MeetingContext } from '../../context/meetingContext';
 import { UserContext } from '../../context/userContext';
@@ -13,7 +13,7 @@ import { ReactComponent as Loader } from '../../assets/loader.svg';
 import Participant from '../../components/Participant';
 
 import { db } from '../../firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, getDoc } from 'firebase/firestore';
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -55,10 +55,10 @@ const Meet = (props) => {
     participants,
     leaveMeeting,
     endMeeting,
+    panelView,
   } = meetingContext;
   const { user } = userContext;
   const history = useHistory();
-  const [view, setView] = useState(false);
 
   const updateUserMeetings = async (meetingId) => {
     const userRef = doc(db, 'users', user.id);
@@ -73,8 +73,9 @@ const Meet = (props) => {
   useEffect(() => {
     const execute = async () => {
       const meetIdProp = props.match.params.meetId;
-      const meetingExistsData = await checkIfMeetingExists(meetIdProp);
-      if (meetingExistsData.meetingExists) {
+      const meetingRef = doc(db, 'meetings', meetIdProp);
+      const meetingExistsData = await getDoc(meetingRef);
+      if (meetingExistsData.exists()) {
         setMeetId(meetIdProp);
         await updateUserMeetings(meetIdProp);
       } else {
@@ -172,27 +173,21 @@ const Meet = (props) => {
   return (
     <Wrapper>
       <MeetWrapper>
-        <MeetContainer infoView={view}>
-          {/* <button
-            onClick={() => {
-              setView(!view);
-            }}
-          >
-            Click to view Info
-          </button> */}
+        <MeetContainer>
           {isConnecting ? <Loader /> : null}
           {!isConnecting && meeting ? (
             <>
               <Participant
                 key={meeting.localParticipant.sid}
                 participant={meeting.localParticipant}
+                me
               />
               {remoteParticipants}
             </>
           ) : null}
           {/* <WhiteBoard /> */}
         </MeetContainer>
-        {view ? <MeetInfo /> : null}
+        {panelView ? <MeetInfo /> : null}
       </MeetWrapper>
     </Wrapper>
   );

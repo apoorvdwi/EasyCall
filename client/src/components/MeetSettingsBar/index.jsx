@@ -17,7 +17,6 @@ import {
 } from 'react-icons/md';
 import { BiChalkboard } from 'react-icons/bi';
 import { IoIosPeople, IoMdChatboxes } from 'react-icons/io';
-import { IoColorFilterOutline } from 'react-icons/io5';
 import { MeetingContext } from '../../context/meetingContext';
 
 const Wrapper = styled.div`
@@ -57,6 +56,7 @@ const MeetSettingsBar = (props) => {
     userVideo: video,
     toggleUserAudio,
     toggleUserVideo,
+    changePanelView,
   } = meetingContext;
 
   const [disabled, setDisabled] = useState(true);
@@ -171,7 +171,12 @@ const MeetSettingsBar = (props) => {
       </Tooltip>
 
       <Tooltip placement="left" title="View Participants">
-        <span className="control" onClick={() => {}}>
+        <span
+          className="control"
+          onClick={() => {
+            changePanelView('participants');
+          }}
+        >
           <IoIosPeople size={30} />
         </span>
       </Tooltip>

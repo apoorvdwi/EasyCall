@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import ParticipantList from '../ParticipantsList';
+import { MeetingContext } from '../../context/meetingContext';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -11,10 +12,12 @@ const Wrapper = styled.div`
   overflow: hidden;
 `;
 
-const MeetInfo = (props) => {
+const MeetInfo = () => {
+  const meetingContext = useContext(MeetingContext);
+  const { panelView } = meetingContext;
   return (
     <Wrapper>
-      <ParticipantList />
+      {panelView === 'participants' ? <ParticipantList /> : null}
     </Wrapper>
   );
 };

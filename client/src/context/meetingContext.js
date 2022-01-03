@@ -14,12 +14,27 @@ const MeetingProvider = ({ children }) => {
   const [participantUserDetails, setParticipantUserDetails] = useState([]);
   const [userAudio, setUserAudio] = useState(true);
   const [userVideo, setUserVideo] = useState(true);
+  const [panelView, setPanelView] = useState(null);
+  const [participantWidth, setParticipantWidth] = useState(50);
 
   useEffect(() => {
     setMeetingDetails(getMeetingDetails(meetId));
   }, [meeting]);
 
-  const endMeeting = useCallback(() => {
+  useEffect(() => {
+    const widthObject = panelView
+      ? { 1: 50, 2: 46, 3: 46, 4: 46, default: 31 }
+      : { 1: 50, 2: 47, default: 31 };
+    const participantCount = participantUserDetails.length;
+
+    setParticipantWidth(widthObject[participantCount] || widthObject.default);
+  }, [panelView, participantUserDetails]);
+
+  const endMeeting = () => {
+    setIsConnecting(true);
+    setMeetId(null);
+    setAccessToken(null);
+    setMeetingDetails(null);
     setMeeting((prevMeeting) => {
       if (prevMeeting) {
         prevMeeting.localParticipant.tracks.forEach((trackPub) => {
@@ -29,13 +44,12 @@ const MeetingProvider = ({ children }) => {
       }
       return null;
     });
-  }, []);
+    setParticipantUserDetails([]);
+  };
 
   const leaveMeeting = () => {
-    // do this when a user leaves the room
     if (!meeting || !meeting.localParticipant) return;
     meeting.on('disconnected', (meeting) => {
-      // Detach the local media elements
       meeting.localParticipant.tracks.forEach((publication) => {
         const attachedElements = publication.track.detach();
         attachedElements.forEach((element) => element.remove());
@@ -125,6 +139,11 @@ const MeetingProvider = ({ children }) => {
     );
   };
 
+  const changePanelView = (view) => {
+    if (panelView === view) setPanelView(!panelView);
+    else setPanelView(view);
+  };
+
   return (
     <MeetingContext.Provider
       value={{
@@ -152,6 +171,9 @@ const MeetingProvider = ({ children }) => {
         toggleUserVideo,
         participantUserDetails,
         setParticipantUserDetails,
+        panelView,
+        participantWidth,
+        changePanelView,
       }}
     >
       {children}
