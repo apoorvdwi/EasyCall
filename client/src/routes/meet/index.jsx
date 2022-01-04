@@ -9,8 +9,10 @@ import { getAccessToken } from '../../utils/twilioUtils';
 import WhiteBoard from '../../components/Whiteboard';
 import { MeetingContext } from '../../context/meetingContext';
 import { UserContext } from '../../context/userContext';
+import { SocketContext } from '../../context/socketContext';
 import { ReactComponent as Loader } from '../../assets/loader.svg';
 import Participant from '../../components/Participant';
+import ParticipantShrinked from '../../components/ParticipantShrinked';
 
 import { db } from '../../firebase';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
@@ -41,6 +43,7 @@ const Meet = (props) => {
   const { enqueueSnackbar } = useSnackbar();
   const meetingContext = useContext(MeetingContext);
   const userContext = useContext(UserContext);
+  const socketContext = useContext(SocketContext);
   const {
     meetId,
     setMeetId,
@@ -58,6 +61,7 @@ const Meet = (props) => {
     panelView,
   } = meetingContext;
   const { user } = userContext;
+  const { isWhiteBoardView } = socketContext;
   const history = useHistory();
 
   const updateUserMeetings = async (meetingId) => {
@@ -175,7 +179,7 @@ const Meet = (props) => {
       <MeetWrapper>
         <MeetContainer>
           {isConnecting ? <Loader /> : null}
-          {!isConnecting && meeting ? (
+          {!isConnecting && meeting && !isWhiteBoardView ? (
             <>
               <Participant
                 key={meeting.localParticipant.sid}
@@ -184,8 +188,19 @@ const Meet = (props) => {
               />
               {remoteParticipants}
             </>
+          ) : isWhiteBoardView ? (
+            <>
+              <ParticipantShrinked>
+                <Participant
+                  key={meeting.localParticipant.sid}
+                  participant={meeting.localParticipant}
+                  me
+                />
+                {remoteParticipants}
+              </ParticipantShrinked>
+              <WhiteBoard />
+            </>
           ) : null}
-          {/* <WhiteBoard /> */}
         </MeetContainer>
         {panelView ? <MeetInfo /> : null}
       </MeetWrapper>

@@ -6,15 +6,18 @@ import './index.css';
 import App from './App';
 import { UserProvider } from './context/userContext';
 import { MeetingProvider } from './context/meetingContext';
+import { SocketProvider } from './context/socketContext';
 
 ReactDOM.render(
   <React.StrictMode>
     <SnackbarProvider maxSnack={3}>
       <UserProvider>
         <MeetingProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
+          <SocketProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </SocketProvider>
         </MeetingProvider>
       </UserProvider>
     </SnackbarProvider>

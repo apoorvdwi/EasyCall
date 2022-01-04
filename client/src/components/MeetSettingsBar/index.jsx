@@ -18,6 +18,7 @@ import {
 import { BiChalkboard } from 'react-icons/bi';
 import { IoIosPeople, IoMdChatboxes } from 'react-icons/io';
 import { MeetingContext } from '../../context/meetingContext';
+import { SocketContext } from '../../context/socketContext';
 
 const Wrapper = styled.div`
   width: 60px;
@@ -48,6 +49,8 @@ const Wrapper = styled.div`
 
 const MeetSettingsBar = (props) => {
   const meetingContext = useContext(MeetingContext);
+  const socketContext = useContext(SocketContext);
+  const { toggleWhiteBoard } = socketContext;
   const history = useHistory();
   const {
     meeting,
@@ -64,69 +67,6 @@ const MeetSettingsBar = (props) => {
   useEffect(() => {
     if (meeting) setDisabled(false);
   }, [meeting]);
-
-  const [options] = useState([
-    {
-      name: 'info',
-      icon: <BsInfoCircle size={30} />,
-      description: 'Meeting Info',
-    },
-    {
-      name: 'audio',
-      icon: <BsMicFill size={30} />,
-      disabledIcon: <BsMicMuteFill size={30} />,
-      description: 'Disable Audio',
-      disabledDescription: 'Enable Audio',
-    },
-    {
-      name: 'video',
-      icon: <BsCameraVideoFill size={30} />,
-      disabledIcon: <BsCameraVideoOffFill size={30} />,
-      description: 'Disable Video',
-      disabledDescription: 'Enable Video',
-    },
-    {
-      name: 'screenshare',
-      icon: <MdPresentToAll size={30} />,
-      disabledIcon: <MdCancelPresentation size={30} />,
-      description: 'Disable Screenshare',
-      disabledDescription: 'Enable Screenshare',
-    },
-    {
-      name: 'record',
-      icon: <BsRecordCircleFill size={30} />,
-      description: 'Record meeting',
-    },
-    {
-      name: 'whiteboard',
-      icon: <BiChalkboard size={30} />,
-      description: 'Open Whiteboard',
-    },
-    // {
-    //   name: 'filters',
-    //   icon: <IoColorFilterOutline size={30} />,
-    //   description: 'Apply Video Filters',
-    // },
-    {
-      name: 'participants',
-      icon: <IoIosPeople size={30} />,
-      description: 'View Participants',
-    },
-    {
-      name: 'chat',
-      icon: <IoMdChatboxes size={30} />,
-      description: 'Open Chat',
-    },
-    {
-      name: 'endcall',
-      icon: <MdOutlineCallEnd size={30} />,
-      description: 'End Call',
-      onClick: () => {
-        endMeeting();
-        history.replace('/');
-      },
-    },
-  ]);
 
   return (
     <Wrapper disabledProp={disabled}>
@@ -165,7 +105,12 @@ const MeetSettingsBar = (props) => {
       </Tooltip>
 
       <Tooltip placement="left" title="WhiteBoard">
-        <span className="control" onClick={() => {}}>
+        <span
+          className="control"
+          onClick={() => {
+            toggleWhiteBoard();
+          }}
+        >
           <BiChalkboard size={30} />
         </span>
       </Tooltip>

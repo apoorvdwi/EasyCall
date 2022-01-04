@@ -1,4 +1,4 @@
-import React, { useState, createContext, useEffect, useCallback } from 'react';
+import React, { useState, createContext, useEffect } from 'react';
 import { connect, LocalAudioTrack, LocalVideoTrack } from 'twilio-video';
 import { getMeetingDetails } from '../utils/firebaseUtils';
 
@@ -18,17 +18,13 @@ const MeetingProvider = ({ children }) => {
   const [participantWidth, setParticipantWidth] = useState(50);
 
   useEffect(() => {
-    setMeetingDetails(getMeetingDetails(meetId));
+    const execute = async () => {
+      const data = await getMeetingDetails(meetId);
+      setMeetingDetails(data);
+    };
+
+    execute();
   }, [meeting]);
-
-  useEffect(() => {
-    const widthObject = panelView
-      ? { 1: 50, 2: 46, 3: 46, 4: 46, default: 31 }
-      : { 1: 50, 2: 47, default: 31 };
-    const participantCount = participantUserDetails.length;
-
-    setParticipantWidth(widthObject[participantCount] || widthObject.default);
-  }, [panelView, participantUserDetails]);
 
   const endMeeting = () => {
     setIsConnecting(true);
@@ -173,6 +169,7 @@ const MeetingProvider = ({ children }) => {
         setParticipantUserDetails,
         panelView,
         participantWidth,
+        setParticipantWidth,
         changePanelView,
       }}
     >

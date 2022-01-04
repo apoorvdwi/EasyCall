@@ -23,6 +23,8 @@
     "jsx-a11y/click-events-have-key-events": "off",
     "react/button-has-type": "off",
     "no-shadow": "off",
+    "operator-linebreak":"off",
+    "no-param-reassign":"off",
     "no-console": "off",
     "no-alert": "off",
     "import/no-dynamic-require": "off",

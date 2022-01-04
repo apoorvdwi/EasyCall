@@ -1,4 +1,4 @@
-import React, { useState, createContext, useEffect } from 'react';
+import React, { useState, createContext } from 'react';
 import { notification } from 'antd';
 import { Button } from '@mui/material';
 import {
@@ -11,7 +11,7 @@ import {
   OAuthProvider,
 } from 'firebase/auth';
 import styled from 'styled-components';
-import { auth, db } from '../firebase';
+import { auth } from '../firebase';
 
 const UserContext = createContext();
 
