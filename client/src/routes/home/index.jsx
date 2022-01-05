@@ -1,10 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { AiOutlineLogout } from 'react-icons/ai';
 import { FaHome } from 'react-icons/fa';
 import { BsFillShareFill } from 'react-icons/bs';
 import { IoMdChatbubbles } from 'react-icons/io';
 import { UserContext } from '../../context/userContext';
+import { MeetingContext } from '../../context/meetingContext';
 import Logo from '../../assets/logoDarkTransparentHorizhontal.png';
 import { StyledSubmitButton } from './components';
 import HomeView from './views/homeView';
@@ -87,9 +88,12 @@ const CurrentRoute = styled.div`
   margin-right: 50px;
   cursor: pointer;
 
-  ${(props) => props.current ? `
+  ${(props) =>
+    props.current
+      ? `
   border-bottom : 4px solid #160c28;
-  ` : ''}
+  `
+      : ''}
 `;
 
 const BottomContainer = styled.div`
@@ -185,8 +189,15 @@ const BottomContainer = styled.div`
 const HomePage = () => {
   const { enqueueSnackbar } = useSnackbar();
   const userContext = useContext(UserContext);
+  const meetingContext = useContext(MeetingContext);
+  const { endMeeting } = meetingContext;
   const { user, signOutUser } = userContext;
   const [view, setView] = useState('home');
+
+  useEffect(() => {
+    endMeeting();
+  }, []);
+
   return (
     <Wrapper>
       <HomeWrapper>

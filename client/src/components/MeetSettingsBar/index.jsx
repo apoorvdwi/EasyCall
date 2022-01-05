@@ -42,6 +42,7 @@ const Wrapper = styled.div`
       ? `
   pointer-events: none;
   cursor: not-allowed;
+  filter: opacity(0.5);
   `
       : ''}
   }
@@ -59,7 +60,9 @@ const MeetSettingsBar = (props) => {
     userVideo: video,
     toggleUserAudio,
     toggleUserVideo,
+    toggleScreenShare,
     changePanelView,
+    screenTrack,
   } = meetingContext;
 
   const [disabled, setDisabled] = useState(true);
@@ -93,8 +96,17 @@ const MeetSettingsBar = (props) => {
       </Tooltip>
 
       <Tooltip placement="left" title="Share Screen">
-        <span className="control" onClick={() => {}}>
-          <MdPresentToAll size={30} />
+        <span
+          className="control"
+          onClick={() => {
+            toggleScreenShare();
+          }}
+        >
+          {!screenTrack ? (
+            <MdPresentToAll size={30} />
+          ) : (
+            <MdCancelPresentation size={30} />
+          )}
         </span>
       </Tooltip>
 

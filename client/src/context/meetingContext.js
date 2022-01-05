@@ -1,6 +1,5 @@
 import React, { useState, createContext, useEffect } from 'react';
 import { connect, LocalAudioTrack, LocalVideoTrack } from 'twilio-video';
-import { getMeetingDetails } from '../utils/firebaseUtils';
 
 const MeetingContext = createContext();
 
@@ -11,20 +10,11 @@ const MeetingProvider = ({ children }) => {
   const [meeting, setMeeting] = useState(null);
   const [isConnecting, setIsConnecting] = useState(true);
   const [participants, setParticipants] = useState([]);
-  const [participantUserDetails, setParticipantUserDetails] = useState([]);
   const [userAudio, setUserAudio] = useState(true);
   const [userVideo, setUserVideo] = useState(true);
   const [panelView, setPanelView] = useState(null);
+  const [screenTrack, setScreenTrack] = useState(null);
   const [participantWidth, setParticipantWidth] = useState(50);
-
-  useEffect(() => {
-    const execute = async () => {
-      const data = await getMeetingDetails(meetId);
-      setMeetingDetails(data);
-    };
-
-    execute();
-  }, [meeting]);
 
   const endMeeting = () => {
     setIsConnecting(true);
@@ -38,9 +28,12 @@ const MeetingProvider = ({ children }) => {
         });
         prevMeeting.disconnect();
       }
+      if (screenTrack) {
+        screenTrack.stop();
+        setScreenTrack(null);
+      }
       return null;
     });
-    setParticipantUserDetails([]);
   };
 
   const leaveMeeting = () => {
@@ -53,46 +46,47 @@ const MeetingProvider = ({ children }) => {
     });
   };
 
-  const connectToMeeting = async (accessToken, meetId = 'test-room') => {
-    const constraints = {
-      audio: true,
-      video: {
-        wdith: 640,
-        height: 480,
-      },
-      networkQuality: {
-        local: 1,
-        remote: 2,
-      },
-    };
+  const connectToMeeting = async (accessToken, meetId) => {
+    if (meetId && accessToken) {
+      const constraints = {
+        audio: true,
+        video: {
+          wdith: 640,
+          height: 480,
+        },
+        networkQuality: {
+          local: 1,
+          remote: 2,
+        },
+      };
 
-    navigator.mediaDevices
-      .getUserMedia(constraints)
-      .then(async (stream) => {
-        const audioTrack = new LocalAudioTrack(stream.getAudioTracks()[0]);
-        const videoTrack = new LocalVideoTrack(stream.getVideoTracks()[0]);
-        window.localStream = stream;
-        const tracks = [audioTrack, videoTrack];
+      navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then(async (stream) => {
+          const audioTrack = new LocalAudioTrack(stream.getAudioTracks()[0]);
+          const videoTrack = new LocalVideoTrack(stream.getVideoTracks()[0]);
+          const tracks = [audioTrack, videoTrack];
 
-        const meeting = await connect(accessToken, {
-          name: meetId,
-          tracks,
+          const meeting = await connect(accessToken, {
+            name: meetId,
+            tracks,
+          });
+
+          setMeeting(meeting);
+
+          meeting.localParticipant.setNetworkQualityConfiguration({
+            local: 2,
+            remote: 1,
+          });
+          setIsConnecting(false);
+        })
+        .catch((err) => {
+          console.log(
+            'Error occured when trying to access to local devices',
+            err,
+          );
         });
-
-        setMeeting(meeting);
-
-        meeting.localParticipant.setNetworkQualityConfiguration({
-          local: 2,
-          remote: 1,
-        });
-        setIsConnecting(false);
-      })
-      .catch((err) => {
-        console.log(
-          'Error occured when trying to access to local devices',
-          err,
-        );
-      });
+    }
   };
 
   const toggleUserAudio = () => {
@@ -123,6 +117,28 @@ const MeetingProvider = ({ children }) => {
     setUserVideo(!userVideo);
   };
 
+  const toggleScreenShare = async () => {
+    if (!screenTrack) {
+      try {
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+        });
+        const userScreen = new LocalVideoTrack(stream.getTracks()[0]);
+        setScreenTrack(userScreen);
+        meeting.localParticipant.publishTrack(userScreen);
+        userScreen.mediaStreamTrack.onended = () => {
+          toggleScreenShare();
+        };
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      meeting.localParticipant.unpublishTrack(screenTrack);
+      screenTrack.stop();
+      setScreenTrack(null);
+    }
+  };
+
   const participantConnected = (participant) => {
     // when a new participant gets connected
     setParticipants((prevParticipants) => [...prevParticipants, participant]);
@@ -140,39 +156,41 @@ const MeetingProvider = ({ children }) => {
     else setPanelView(view);
   };
 
+  const contextProps = {
+    meetId,
+    setMeetId,
+    accessToken,
+    setAccessToken,
+    meeting,
+    meetingDetails,
+    setMeetingDetails,
+    setMeeting,
+    endMeeting,
+    leaveMeeting,
+    connectToMeeting,
+    isConnecting,
+    setIsConnecting,
+    participants,
+    setParticipants,
+    participantConnected,
+    participantDisconnected,
+    userAudio,
+    setUserAudio,
+    userVideo,
+    setUserVideo,
+    toggleUserAudio,
+    toggleUserVideo,
+    panelView,
+    participantWidth,
+    setParticipantWidth,
+    changePanelView,
+    screenTrack,
+    setScreenTrack,
+    toggleScreenShare,
+  };
+
   return (
-    <MeetingContext.Provider
-      value={{
-        meetId,
-        setMeetId,
-        accessToken,
-        setAccessToken,
-        meeting,
-        meetingDetails,
-        setMeeting,
-        endMeeting,
-        leaveMeeting,
-        connectToMeeting,
-        isConnecting,
-        setIsConnecting,
-        participants,
-        setParticipants,
-        participantConnected,
-        participantDisconnected,
-        userAudio,
-        setUserAudio,
-        userVideo,
-        setUserVideo,
-        toggleUserAudio,
-        toggleUserVideo,
-        participantUserDetails,
-        setParticipantUserDetails,
-        panelView,
-        participantWidth,
-        setParticipantWidth,
-        changePanelView,
-      }}
-    >
+    <MeetingContext.Provider value={contextProps}>
       {children}
     </MeetingContext.Provider>
   );

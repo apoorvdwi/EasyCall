@@ -46,6 +46,8 @@
     "react/jsx-filename-extension": "off",
     "prefer-template": "off",
     "arrow-body-style": "off",
+    "no-await-in-loop":"off",
+    "no-constant-condition":"off",
     "object-curly-newline": "off",
     "operator-linebreak": "off",
     "implicit-arrow-linebreak": "off",

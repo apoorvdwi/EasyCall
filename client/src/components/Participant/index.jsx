@@ -2,8 +2,8 @@ import React, { useContext, useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { MeetingContext } from '../../context/meetingContext';
 import { UserContext } from '../../context/userContext';
+import { SocketContext } from '../../context/socketContext';
 import { trackpubsToTracks } from '../../utils/twilioUtils';
-import { getParticipantData } from '../../utils/firebaseUtils';
 import {
   BsMicFill,
   BsMicMuteFill,
@@ -73,30 +73,22 @@ const StyledAudio = styled.audio``;
 
 const Participant = ({ participant, me = false }) => {
   const meetingContext = useContext(MeetingContext);
-  const { setParticipantUserDetails, participantWidth } = meetingContext;
+  const socketContext = useContext(SocketContext);
+  const { usersList } = socketContext;
+  const { participantWidth, userAudio, userVideo, setScreenTrack } =
+    meetingContext;
   const userContext = useContext(UserContext);
   const { user } = userContext;
   const [participantUser, setParticipantUser] = useState(null);
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
-  const [isVideoEnabled, setIsVideoEnabled] = useState(true);
-  const [isAudioEnabled, setIsAudioEnabled] = useState(true);
+  const [isVideoEnabled, setIsVideoEnabled] = useState(userVideo);
+  const [isAudioEnabled, setIsAudioEnabled] = useState(userAudio);
 
   const videoRef = useRef();
   const audioRef = useRef();
 
-  const setParticipantDetailsHelper = async () => {
-    const userDetails = await getParticipantData(participant.identity);
-    setParticipantUser(userDetails);
-    setParticipantUserDetails((prevParticipants) => [
-      ...prevParticipants,
-      userDetails,
-    ]);
-  };
-
   useEffect(() => {
-    // initialise basic values for the participants
-    setParticipantDetailsHelper();
     setVideoTracks(trackpubsToTracks(participant.videoTracks));
     setAudioTracks(trackpubsToTracks(participant.audioTracks));
 
@@ -107,6 +99,20 @@ const Participant = ({ participant, me = false }) => {
     });
 
     participant.on('trackUnsubscribed', trackUnsubscribed);
+
+    participant.on('trackPublished', async (remoteTrackPublication) => {
+      while (true) {
+        if (remoteTrackPublication.track) break;
+        await new Promise((res) => {
+          setTimeout(res, 1);
+        });
+      }
+      setScreenTrack(remoteTrackPublication.track);
+    });
+
+    participant.on('trackUnpublished', (remoteTrackPublication) => {
+      setScreenTrack(null);
+    });
 
     participant.tracks.forEach((publication) => {
       if (publication.track) {
@@ -121,12 +127,18 @@ const Participant = ({ participant, me = false }) => {
     return () => {
       setVideoTracks([]);
       setAudioTracks([]);
-      setParticipantUserDetails((prevParticipants) =>
-        prevParticipants.filter((p) => p !== participantUser),
-      );
       participant.removeAllListeners();
     };
   }, [participant]);
+
+  useEffect(() => {
+    if (usersList && participant) {
+      const participantData = usersList.filter(
+        (user) => user.id === participant.identity,
+      );
+      setParticipantUser(participantData[0]);
+    }
+  }, [usersList, participant]);
 
   useEffect(() => {
     const videoTrack = videoTracks[0];

@@ -164,20 +164,18 @@ const UserProvider = ({ children }) => {
     }
   };
 
+  const contextProps = {
+    user,
+    setUser,
+    signInWithGoogle,
+    signInWithGithub,
+    signOutUser,
+    loading,
+    setLoading,
+  };
+
   return (
-    <UserContext.Provider
-      value={{
-        user,
-        setUser,
-        signInWithGoogle,
-        signInWithGithub,
-        signOutUser,
-        loading,
-        setLoading,
-      }}
-    >
-      {children}
-    </UserContext.Provider>
+    <UserContext.Provider value={contextProps}>{children}</UserContext.Provider>
   );
 };
 

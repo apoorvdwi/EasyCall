@@ -2,11 +2,9 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { MeetingContext } from '../../context/meetingContext';
 
-const randomstring = require('randomstring');
-
 const StyledIframe = styled.iframe`
   height: 90%;
-  width: calc(75% - 100px);
+  width: calc(76% - 80px);
   border-radius: 20px;
   border: 5px #000411 solid;
 `;

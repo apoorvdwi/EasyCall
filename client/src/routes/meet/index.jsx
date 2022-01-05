@@ -7,6 +7,7 @@ import MeetContainer from '../../components/MeetContainer';
 import MeetInfo from '../../components/MeetInfo';
 import { getAccessToken } from '../../utils/twilioUtils';
 import WhiteBoard from '../../components/Whiteboard';
+import SharedScreen from '../../components/SharedScreen';
 import { MeetingContext } from '../../context/meetingContext';
 import { UserContext } from '../../context/userContext';
 import { SocketContext } from '../../context/socketContext';
@@ -50,7 +51,7 @@ const Meet = (props) => {
     accessToken,
     setAccessToken,
     meeting,
-    setMeeting,
+    setMeetingDetails,
     connectToMeeting,
     isConnecting,
     participantConnected,
@@ -61,7 +62,7 @@ const Meet = (props) => {
     panelView,
   } = meetingContext;
   const { user } = userContext;
-  const { isWhiteBoardView } = socketContext;
+  const { screenToDisplay } = socketContext;
   const history = useHistory();
 
   const updateUserMeetings = async (meetingId) => {
@@ -81,6 +82,7 @@ const Meet = (props) => {
       const meetingExistsData = await getDoc(meetingRef);
       if (meetingExistsData.exists()) {
         setMeetId(meetIdProp);
+        setMeetingDetails(meetingExistsData.data());
         await updateUserMeetings(meetIdProp);
       } else {
         enqueueSnackbar(
@@ -179,27 +181,30 @@ const Meet = (props) => {
       <MeetWrapper>
         <MeetContainer>
           {isConnecting ? <Loader /> : null}
-          {!isConnecting && meeting && !isWhiteBoardView ? (
-            <>
-              <Participant
-                key={meeting.localParticipant.sid}
-                participant={meeting.localParticipant}
-                me
-              />
-              {remoteParticipants}
-            </>
-          ) : isWhiteBoardView ? (
-            <>
-              <ParticipantShrinked>
+          {!isConnecting && meeting ? (
+            screenToDisplay ? (
+              <>
+                <ParticipantShrinked>
+                  <Participant
+                    key={meeting.localParticipant.sid}
+                    participant={meeting.localParticipant}
+                    me
+                  />
+                  {remoteParticipants}
+                </ParticipantShrinked>
+                {screenToDisplay === 'whiteBoard' ? <WhiteBoard /> : null}
+                {screenToDisplay === 'sharedScreen' ? <SharedScreen /> : null}
+              </>
+            ) : (
+              <>
                 <Participant
                   key={meeting.localParticipant.sid}
                   participant={meeting.localParticipant}
                   me
                 />
                 {remoteParticipants}
-              </ParticipantShrinked>
-              <WhiteBoard />
-            </>
+              </>
+            )
           ) : null}
         </MeetContainer>
         {panelView ? <MeetInfo /> : null}

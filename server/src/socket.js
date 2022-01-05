@@ -56,6 +56,27 @@ function socketIOServer(server, MAX_CAPACITY) {
     socket.on('whiteboard', ({ meetId, user }) => {
       io.sockets.in(meetId).emit('whiteboard', { meetId, user });
     });
+
+    socket.on('disconnect', () => {
+      const rooms = Object.keys(socketsInRoom);
+      rooms.forEach((roomId) => {
+        if (socketsInRoom[roomId].includes(socket.id)) {
+          const remainingUsers = socketsInRoom[roomId].filter(
+            (u) => u !== socket.id,
+          );
+          const remainingUserObj = usersInRoom[roomId].filter(
+            (u) => u.socketId !== socket.id,
+          );
+
+          socketsInRoom[roomId] = remainingUsers;
+          usersInRoom[roomId] = remainingUserObj;
+
+          io.sockets.in(roomId).emit('updated-users-list', {
+            usersInThisRoom: usersInRoom[roomId],
+          });
+        }
+      });
+    });
   });
 }
 

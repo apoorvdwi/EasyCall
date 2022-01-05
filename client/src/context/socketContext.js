@@ -18,9 +18,18 @@ const SocketProvider = ({ children }) => {
   const { enqueueSnackbar } = useSnackbar();
   const meetingContext = useContext(MeetingContext);
   const { user } = userContext;
-  const { meetId, panelView, participantUserDetails, setParticipantWidth } =
-    meetingContext;
+  const {
+    meetId,
+    panelView,
+    setParticipantWidth,
+    endMeeting,
+    meeting,
+    screenTrack,
+    toggleScreenShare,
+  } = meetingContext;
   const [isWhiteBoardView, setIsWhiteBoardView] = useState(false);
+  const [screenToDisplay, setScreenToDisplay] = useState(null);
+  const [usersList, setUsersList] = useState([]);
   const socketRef = useRef(null);
   const socketConnected = useRef(false);
 
@@ -29,22 +38,45 @@ const SocketProvider = ({ children }) => {
       socketRef.current = io(process.env.REACT_APP_SERVER_BASE_URL);
       socketConnected.current = true;
       joinRoom();
+      listenToParticipantUpdates();
       listenToWhiteBoard();
     }
   }, [meetId]);
 
   useEffect(() => {
-    if (isWhiteBoardView) {
-      setParticipantWidth(95);
+    if (isWhiteBoardView && screenTrack) {
+      setScreenToDisplay((prevScreen) => {
+        let newScreen = '';
+        if (prevScreen === 'sharedScreen') {
+          toggleScreenShare();
+          newScreen = 'whiteBoard';
+        } else {
+          toggleWhiteBoard();
+          newScreen = 'sharedScreen';
+        }
+        return newScreen;
+      });
+    } else if (isWhiteBoardView) {
+      setScreenToDisplay('whiteBoard');
+    } else if (screenTrack) {
+      setScreenToDisplay('sharedScreen');
+    } else {
+      setScreenToDisplay(null);
+    }
+  }, [isWhiteBoardView, screenTrack]);
+
+  useEffect(() => {
+    if (screenToDisplay) {
+      setParticipantWidth(100);
     } else {
       const widthObject = panelView
         ? { 1: 50, 2: 46, 3: 46, 4: 46, default: 31 }
         : { 1: 50, 2: 47, default: 31 };
-      const participantCount = participantUserDetails.length;
+      const participantCount = usersList.length;
 
       setParticipantWidth(widthObject[participantCount] || widthObject.default);
     }
-  }, [panelView, participantUserDetails, isWhiteBoardView]);
+  }, [panelView, usersList, screenToDisplay]);
 
   useEffect(() => {
     const cleanup = (event) => {
@@ -53,6 +85,8 @@ const SocketProvider = ({ children }) => {
       }
       if (socketRef.current) {
         socketRef.current.disconnect();
+        socketConnected.current = false;
+        setIsWhiteBoardView(false);
       }
     };
 
@@ -68,11 +102,38 @@ const SocketProvider = ({ children }) => {
     socketRef.current.emit('join-room', { meetId, user });
 
     socketRef.current.on('room-full', () => {
-      window.location.href = '/';
+      if (meeting) endMeeting();
+      enqueueSnackbar('This room is full, please join a different room', {
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+        preventDuplicate: true,
+        TransitionComponent: Collapse,
+        variant: 'error',
+      });
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1500);
     });
 
     socketRef.current.on('user-already-joined', () => {
-      window.location.href = '/';
+      if (meeting) endMeeting();
+      enqueueSnackbar(
+        "It looks like you're already in this room. You cannot join the same room twice",
+        {
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'center',
+          },
+          preventDuplicate: true,
+          TransitionComponent: Collapse,
+          variant: 'error',
+        },
+      );
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1500);
     });
   };
 
@@ -92,6 +153,12 @@ const SocketProvider = ({ children }) => {
     });
   };
 
+  const listenToParticipantUpdates = () => {
+    socketRef.current.on('updated-users-list', ({ usersInThisRoom }) => {
+      setUsersList(usersInThisRoom);
+    });
+  };
+
   const toggleWhiteBoard = () => {
     if (isWhiteBoardView) {
       setIsWhiteBoardView(false);
@@ -107,6 +174,9 @@ const SocketProvider = ({ children }) => {
     toggleWhiteBoard,
     isWhiteBoardView,
     setIsWhiteBoardView,
+    usersList,
+    setUsersList,
+    screenToDisplay,
   };
 
   return (
