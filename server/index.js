@@ -18,6 +18,10 @@ app.use(
 
 const MAX_CAPACITY = 2;
 
+app.get('/', (req, res) => {
+  res.send('Welcome to EasyCall Backend Service');
+});
+
 app.use('/twilio', twilio);
 
 const server = http.createServer(app);
