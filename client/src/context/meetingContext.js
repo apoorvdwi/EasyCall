@@ -127,7 +127,9 @@ const MeetingProvider = ({ children }) => {
         setScreenTrack(userScreen);
         meeting.localParticipant.publishTrack(userScreen);
         userScreen.mediaStreamTrack.onended = () => {
-          toggleScreenShare();
+          meeting.localParticipant.unpublishTrack(screenTrack);
+          screenTrack.stop();
+          setScreenTrack(null);
         };
       } catch (e) {
         console.error(e);
