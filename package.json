@@ -7,7 +7,8 @@
     "dev": "concurrently --kill-others \"cd client && npm start\" \"cd server && nodemon index.js\"",
     "dev:install": "npm i && concurrently \"cd client && npm i\" \"cd server && npm i\"",
     "dev:update": "npm update && concurrently \"cd client && npm update\" \"cd server && npm update\"",
-    "lint": "concurrently \"cd client && npm run pretest\" \"cd server && npm run pretest\""
+    "lint": "concurrently \"cd client && npm run pretest\" \"cd server && npm run pretest\"",
+    "server-prod": "cd server && npm run start"
   },
   "keywords": [],
   "author": "apoorv",
