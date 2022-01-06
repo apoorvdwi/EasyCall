@@ -1,4 +1,5 @@
 import React, { useEffect, useContext } from 'react';
+import axios from 'axios';
 import { onSnapshot } from 'firebase/firestore';
 import { Switch, Route } from 'react-router-dom';
 import { auth, createUserProfileDocument } from './firebase';
@@ -12,6 +13,10 @@ import Meet from './routes/meet';
 function App() {
   const userContext = useContext(UserContext);
   const { user, setUser, loading, setLoading } = userContext;
+
+  useEffect(() => {
+    axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}`);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
