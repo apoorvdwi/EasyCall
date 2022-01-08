@@ -1,5 +1,8 @@
 import React, { useState, createContext, useEffect } from 'react';
 import { connect, LocalAudioTrack, LocalVideoTrack } from 'twilio-video';
+import moment from 'moment';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const MeetingContext = createContext();
 
@@ -15,12 +18,42 @@ const MeetingProvider = ({ children }) => {
   const [panelView, setPanelView] = useState(null);
   const [screenTrack, setScreenTrack] = useState(null);
   const [participantWidth, setParticipantWidth] = useState(50);
+  const [meetingChats, setMeetingChats] = useState([]);
+
+  useEffect(() => {
+    const execute = async () => {
+      if (meetingDetails) {
+        const chatRef = doc(db, 'chats', meetingDetails.chatId);
+        const chatDoc = await getDoc(chatRef);
+        const sortedChats = chatDoc.data().messages.sort((first, second) => {
+          const firstDate = moment(first.createdAt).valueOf();
+          const secondDate = moment(second.createdAt).valueOf();
+          let ans = 0;
+          if (firstDate === secondDate) ans = 0;
+          else if (firstDate < secondDate) ans = -1;
+          else ans = 1;
+
+          return ans;
+        });
+
+        if (sortedChats) setMeetingChats(sortedChats);
+      }
+    };
+
+    execute();
+  }, [meetingDetails]);
 
   const endMeeting = () => {
     setIsConnecting(true);
     setMeetId(null);
+    setPanelView(null);
     setAccessToken(null);
     setMeetingDetails(null);
+    setUserAudio(true);
+    setUserVideo(true);
+    setMeetingChats([]);
+    setParticipants([]);
+    setParticipantWidth(50);
     setMeeting((prevMeeting) => {
       if (prevMeeting) {
         prevMeeting.localParticipant.tracks.forEach((trackPub) => {
@@ -189,6 +222,8 @@ const MeetingProvider = ({ children }) => {
     screenTrack,
     setScreenTrack,
     toggleScreenShare,
+    meetingChats,
+    setMeetingChats,
   };
 
   return (

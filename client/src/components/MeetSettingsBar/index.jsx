@@ -139,7 +139,12 @@ const MeetSettingsBar = (props) => {
       </Tooltip>
 
       <Tooltip placement="left" title="Chat">
-        <span className="control" onClick={() => {}}>
+        <span
+          className="control"
+          onClick={() => {
+            changePanelView('chat');
+          }}
+        >
           <IoMdChatboxes size={30} />
         </span>
       </Tooltip>

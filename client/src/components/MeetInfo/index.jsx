@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import ParticipantList from '../ParticipantsList';
+import MeetChat from '../MeetChat';
 import { MeetingContext } from '../../context/meetingContext';
 
 const Wrapper = styled.div`
@@ -17,6 +18,7 @@ const MeetInfo = () => {
   const { panelView } = meetingContext;
   return (
     <Wrapper>
+      {panelView === 'chat' ? <MeetChat /> : null}
       {panelView === 'participants' ? <ParticipantList /> : null}
     </Wrapper>
   );

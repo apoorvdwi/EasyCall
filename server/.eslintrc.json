@@ -16,6 +16,7 @@
   "rules": {
     "no-nested-ternary": "off",
     "import/prefer-default-export": "off",
+    "import/no-unresolved": "off",
     "max-len": "off",
     "object-shorthand": "off",
     "no-use-before-define": "off",

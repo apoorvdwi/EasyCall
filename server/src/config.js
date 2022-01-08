@@ -7,6 +7,7 @@ module.exports = {
     apiSecret: process.env.TWILIO_API_SECRET,
     authToken: process.env.TWILIO_AUTH_TOKEN,
   },
+  google_config_base64: process.env.GOOGLE_CONFIG_BASE64,
   url: {
     client: 'http://localhost:3000',
   },

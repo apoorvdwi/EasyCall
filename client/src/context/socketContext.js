@@ -20,12 +20,14 @@ const SocketProvider = ({ children }) => {
   const { user } = userContext;
   const {
     meetId,
+    meetingDetails,
     panelView,
     setParticipantWidth,
     endMeeting,
     meeting,
     screenTrack,
     toggleScreenShare,
+    setMeetingChats,
   } = meetingContext;
   const [isWhiteBoardView, setIsWhiteBoardView] = useState(false);
   const [screenToDisplay, setScreenToDisplay] = useState(null);
@@ -40,6 +42,7 @@ const SocketProvider = ({ children }) => {
       joinRoom();
       listenToParticipantUpdates();
       listenToWhiteBoard();
+      receiveMessages();
     }
   }, [meetId]);
 
@@ -168,6 +171,34 @@ const SocketProvider = ({ children }) => {
     }
   };
 
+  const sendMessage = (body, user) => {
+    if (body === '') return;
+    const chat = {
+      user,
+      message: {
+        body,
+        time: new Date(),
+      },
+    };
+    addChat(chat);
+
+    socketRef.current.emit('send-message', {
+      meetId,
+      chatId: meetingDetails.chatId,
+      chat,
+    });
+  };
+
+  const receiveMessages = () => {
+    socketRef.current.on('receive-message', ({ chat }) => {
+      addChat(chat);
+    });
+  };
+
+  const addChat = (message) => {
+    setMeetingChats((chats) => [...chats, message]);
+  };
+
   const contextProps = {
     socketRef,
     socketConnected,
@@ -177,6 +208,8 @@ const SocketProvider = ({ children }) => {
     usersList,
     setUsersList,
     screenToDisplay,
+    sendMessage,
+    receiveMessages,
   };
 
   return (

@@ -50,7 +50,7 @@ const Participant = styled.div`
   font-size: 20px;
 `;
 
-const ParticipantList = (props) => {
+const ParticipantList = () => {
   const socketContext = useContext(SocketContext);
   const { usersList } = socketContext;
   return (

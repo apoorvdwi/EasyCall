@@ -59,13 +59,21 @@ const HomeView = () => {
     // create meeting and join the meeting
     setLocalLoading({ ...localLoading, create: true });
     const meetingId = uuidv4();
+    const chatId = uuidv4();
     const meetingRef = doc(db, 'meetings', meetingId);
+    const chatRef = doc(db, 'chats', chatId);
+    await setDoc(chatRef, {
+      messages: [],
+      createdAt: new Date(),
+      meetingId,
+    });
     const whiteBoardUrl = generateWhiteBoardUrl();
     await setDoc(meetingRef, {
       meetingTitle: newMeetName,
       createdAt: new Date(),
       createdBy: user.id,
       whiteBoardUrl,
+      chatId,
     });
     setMeetId(meetingId);
     const userRef = doc(db, 'users', user.id);

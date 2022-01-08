@@ -2,6 +2,7 @@ function socketIOServer(server, MAX_CAPACITY) {
   // initialise a Socket.io server
 
   const { allowedURLs } = require('./config');
+  const addMessageToFirebase = require('./util');
   const io = require('socket.io')(server, {
     cors: {
       origin: allowedURLs,
@@ -55,6 +56,11 @@ function socketIOServer(server, MAX_CAPACITY) {
 
     socket.on('whiteboard', ({ meetId, user }) => {
       io.sockets.in(meetId).emit('whiteboard', { meetId, user });
+    });
+
+    socket.on('send-message', ({ meetId, chatId, chat }) => {
+      addMessageToFirebase(chatId, chat);
+      socket.to(meetId).emit('receive-message', { chat });
     });
 
     socket.on('disconnect', () => {

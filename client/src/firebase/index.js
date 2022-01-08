@@ -45,6 +45,7 @@ export const createUserProfileDocument = async (
         createdAt,
         userImage: photoURL,
         meetings: [],
+        chats: [],
         ...additionalData,
       });
     } catch (error) {
