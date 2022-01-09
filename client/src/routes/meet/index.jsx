@@ -65,11 +65,17 @@ const Meet = (props) => {
   const { screenToDisplay } = socketContext;
   const history = useHistory();
 
-  const updateUserMeetings = async (meetingId) => {
+  const updateUserMeetings = async (meetingData, meetingId) => {
     const userRef = doc(db, 'users', user.id);
-    const updatedMeetingData = [
-      ...new Set(user.meetings ? [...user.meetings, meetingId] : [meetingId]),
-    ];
+    let updatedMeetingData = user.meetings ? user.meetings : {};
+    if (!(meetingId in updatedMeetingData)) {
+      updatedMeetingData = {
+        ...updatedMeetingData,
+        [meetingId]: meetingData.meetingTitle
+          ? meetingData.meetingTitle
+          : meetingId,
+      };
+    }
     await updateDoc(userRef, {
       meetings: updatedMeetingData,
     });
@@ -81,9 +87,10 @@ const Meet = (props) => {
       const meetingRef = doc(db, 'meetings', meetIdProp);
       const meetingExistsData = await getDoc(meetingRef);
       if (meetingExistsData.exists()) {
+        const meetingData = meetingExistsData.data();
         setMeetId(meetIdProp);
-        setMeetingDetails(meetingExistsData.data());
-        await updateUserMeetings(meetIdProp);
+        setMeetingDetails(meetingData);
+        await updateUserMeetings(meetingData, meetIdProp);
       } else {
         enqueueSnackbar(
           'Meeting requested was not found !! Redirecting to Dashboard',
@@ -135,7 +142,7 @@ const Meet = (props) => {
     if (accessToken && meetId) {
       connectToMeeting(accessToken, meetId);
     }
-  }, [accessToken]);
+  }, [accessToken, meetId]);
 
   useEffect(() => {
     leaveMeeting();

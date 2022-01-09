@@ -9,8 +9,18 @@ import { IoSendSharp } from 'react-icons/io5';
 const Wrapper = styled.div`
   width: 100%;
   position: relative;
-  max-height: calc(100%);
-  min-height: calc(100%);
+  height: 100%;
+  overflow-y: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+`;
+
+const ChatsWrapper = styled.div`
+  width: 100%;
+  max-height: calc(100% - 60px);
+  min-height: calc(100% - 60px);
   overflow-y: auto;
   padding: 10px;
   display: flex;
@@ -34,7 +44,7 @@ const Wrapper = styled.div`
 `;
 
 const Message = styled.div`
-  width: max-content;
+  width: auto;
   max-width: 95%;
   padding: 5px 20px;
   margin-bottom: 10px;
@@ -45,7 +55,18 @@ const Message = styled.div`
   background: #000411;
   font-family: 'Sora', sans-serif;
   color: #fff;
-  font-size: 12px;
+
+  p {
+    font-size: 12px;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    ${(props) =>
+    props.me
+      ? `
+    text-align: right;`
+      : `
+    text-align: left;`}
+  }
 
   ${(props) =>
     props.me
@@ -85,7 +106,8 @@ const MessageInput = styled(Input)`
 const InputWrapper = styled.div`
   width: 100%;
   position: sticky;
-  top: 97%;
+  padding: 10px;
+  bottom: 0;
   left: 0;
   display: flex;
 `;
@@ -129,15 +151,17 @@ const MeetChat = () => {
   return (
     meetingChats && (
       <Wrapper>
-        {meetingChats.map((chat) => {
-          const name = chat.user.displayName;
-          return (
-            <Message me={chat.user.id === user.id}>
-              <span>{name === user.displayName ? 'You' : name}</span>
-              {chat.message.body}
-            </Message>
-          );
-        })}
+        <ChatsWrapper>
+          {meetingChats.map((chat) => {
+            const name = chat.user.displayName;
+            return (
+              <Message me={chat.user.id === user.id}>
+                <span>{name === user.displayName ? 'You' : name}</span>
+                <p>{chat.message.body}</p>
+              </Message>
+            );
+          })}
+        </ChatsWrapper>
         <InputWrapper>
           <MessageInput
             value={messageData}

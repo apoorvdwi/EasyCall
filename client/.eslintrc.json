@@ -48,6 +48,7 @@
     "arrow-body-style": "off",
     "no-await-in-loop":"off",
     "no-constant-condition":"off",
+    "no-unneeded-ternary": "off",
     "object-curly-newline": "off",
     "operator-linebreak": "off",
     "implicit-arrow-linebreak": "off",

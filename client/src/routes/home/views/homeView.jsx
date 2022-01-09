@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { BsCameraVideo, BsArrowRightShort } from 'react-icons/bs';
+import { BsCameraVideo, BsArrowRightShort, BsArrowRight } from 'react-icons/bs';
 import { AiFillClockCircle } from 'react-icons/ai';
 import { Collapse } from '@mui/material';
 import { MdGroups } from 'react-icons/md';
@@ -16,6 +16,7 @@ import {
   SubHeading,
   StyledInput,
   StyledSubmitButton,
+  RecentMeetings,
 } from '../components';
 
 import { db } from '../../../firebase';
@@ -69,7 +70,7 @@ const HomeView = () => {
     });
     const whiteBoardUrl = generateWhiteBoardUrl();
     await setDoc(meetingRef, {
-      meetingTitle: newMeetName,
+      meetingTitle: newMeetName ? newMeetName : meetingId,
       createdAt: new Date(),
       createdBy: user.id,
       whiteBoardUrl,
@@ -77,9 +78,13 @@ const HomeView = () => {
     });
     setMeetId(meetingId);
     const userRef = doc(db, 'users', user.id);
-    const updatedMeetingData = [
-      ...new Set(user.meetings ? [...user.meetings, meetingId] : [meetingId]),
-    ];
+    let updatedMeetingData = user.meetings ? user.meetings : {};
+    if (!(meetingId in updatedMeetingData)) {
+      updatedMeetingData = {
+        ...updatedMeetingData,
+        [meetingId]: newMeetName ? newMeetName : meetingId,
+      };
+    }
     await updateDoc(userRef, {
       meetings: updatedMeetingData,
     });
@@ -147,10 +152,24 @@ const HomeView = () => {
         </div>
       </div>
       <div className="right">
-        <Heading>
+        <Heading style={{ marginBottom: '15px' }}>
           <AiFillClockCircle size={30} />
           &nbsp;Recent Meetings
         </Heading>
+        {user.meetings
+          ? Object.keys(user.meetings).map((meetingId) => {
+            return (
+              <RecentMeetings
+                onClick={() => {
+                  history.push(`/meet/${meetingId}`);
+                }}
+              >
+                {user.meetings[meetingId]}
+                <BsArrowRight size={30} />
+              </RecentMeetings>
+            );
+          })
+          : null}
       </div>
     </>
   );

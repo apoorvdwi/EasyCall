@@ -185,12 +185,29 @@ const BottomContainer = styled.div`
       border-radius: 20px;
       background-color: #aeb7b3;
       display: flex;
-      padding: 30px;
+      padding: 20px 30px;
       flex-direction: column;
       justify-content: top;
       align-items: center;
       width: 100%;
       height: 100%;
+      max-height: 100%;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: 10px;
+        background: #e1efe6;
+      }
+
+      /* Track */
+      &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px #aeb7b3;
+      }
+
+      /* Handle */
+      &::-webkit-scrollbar-thumb {
+        background: #000411;
+      }
     }
   }
 `;

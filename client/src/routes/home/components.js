@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { Input, Button } from 'antd';
-// import Button from '@mui/material/Button';
 
 export const Heading = styled.span`
   font-family: 'Sora', sans-serif;
@@ -68,5 +67,25 @@ export const StyledSubmitButton = styled(Button)`
 
   &:hover {
     border: 2px solid #160c28;
+  }
+`;
+
+export const RecentMeetings = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  border-radius: 20px;
+  font-family: 'Sora', sans-serif;
+  color: #160c28;
+  font-size: 20px;
+  font-weight: 400;
+  background: #e1efe6;
+  cursor: pointer;
+  padding: 5px 20px;
+
+  &:hover {
+    background: #efcb68;
   }
 `;
