@@ -3,7 +3,6 @@ import Button from '@mui/material/Button';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
 import styled from 'styled-components';
 import { UserContext } from '../../context/userContext';
-import './styles.scss';
 import Logo from '../../assets/logoDarkTransparentHorizhontal.png';
 import VideoCall from '../../assets/Illustrations/home.png';
 

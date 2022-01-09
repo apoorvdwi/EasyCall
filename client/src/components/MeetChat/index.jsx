@@ -35,6 +35,7 @@ const Wrapper = styled.div`
 
 const Message = styled.div`
   width: max-content;
+  max-width: 95%;
   padding: 5px 20px;
   margin-bottom: 10px;
   display: flex;

@@ -87,10 +87,6 @@ const MeetingProvider = ({ children }) => {
           wdith: 640,
           height: 480,
         },
-        networkQuality: {
-          local: 1,
-          remote: 2,
-        },
       };
 
       navigator.mediaDevices
@@ -107,10 +103,6 @@ const MeetingProvider = ({ children }) => {
 
           setMeeting(meeting);
 
-          meeting.localParticipant.setNetworkQualityConfiguration({
-            local: 2,
-            remote: 1,
-          });
           setIsConnecting(false);
         })
         .catch((err) => {
