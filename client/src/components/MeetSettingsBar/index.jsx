@@ -22,7 +22,7 @@ import { SocketContext } from '../../context/socketContext';
 
 const Wrapper = styled.div`
   width: 60px;
-  height: 95%;
+  height: 90%;
   border-radius: 50px;
   position: absolute;
   right: 20px;
@@ -74,7 +74,12 @@ const MeetSettingsBar = (props) => {
   return (
     <Wrapper disabledProp={disabled}>
       <Tooltip placement="left" title="Meeting Info">
-        <span className="control">
+        <span
+          className="control"
+          onClick={() => {
+            changePanelView('info');
+          }}
+        >
           <BsInfoCircle size={30} />
         </span>
       </Tooltip>
@@ -107,12 +112,6 @@ const MeetSettingsBar = (props) => {
           ) : (
             <MdCancelPresentation size={30} />
           )}
-        </span>
-      </Tooltip>
-
-      <Tooltip placement="left" title="Record Meeting">
-        <span className="control" onClick={() => {}}>
-          <BsRecordCircleFill size={30} />
         </span>
       </Tooltip>
 

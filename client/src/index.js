@@ -7,6 +7,7 @@ import App from './App';
 import { UserProvider } from './context/userContext';
 import { MeetingProvider } from './context/meetingContext';
 import { SocketProvider } from './context/socketContext';
+import { MessagingProvider } from './context/messagingContext';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -14,9 +15,11 @@ ReactDOM.render(
       <UserProvider>
         <MeetingProvider>
           <SocketProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
+            <MessagingProvider>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </MessagingProvider>
           </SocketProvider>
         </MeetingProvider>
       </UserProvider>

@@ -45,7 +45,7 @@ const HomeView = () => {
       history.push(`/meet/${meetingId}`);
     } else {
       setLocalLoading({ ...localLoading, join: false });
-      enqueueSnackbar('Room requested was not found !!', {
+      enqueueSnackbar('Meeting requested was not found !!', {
         anchorOrigin: {
           vertical: 'top',
           horizontal: 'center',
@@ -157,9 +157,10 @@ const HomeView = () => {
           &nbsp;Recent Meetings
         </Heading>
         {user.meetings
-          ? Object.keys(user.meetings).map((meetingId) => {
+          ? Object.keys(user.meetings).map((meetingId, index) => {
             return (
               <RecentMeetings
+                key={index}
                 onClick={() => {
                   history.push(`/meet/${meetingId}`);
                 }}

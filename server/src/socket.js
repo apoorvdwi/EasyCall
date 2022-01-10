@@ -9,49 +9,49 @@ function socketIOServer(server, MAX_CAPACITY) {
     },
   });
 
-  const socketsInRoom = {};
-  const usersInRoom = {};
+  const socketsInMeeting = {};
+  const usersInMeeting = {};
 
   io.on('connection', (socket) => {
     console.log('Connection successful', socket.id);
 
-    socket.on('join-room', ({ meetId, user }) => {
+    socket.on('join-meeting', ({ meetId, user }) => {
       if (
-        socketsInRoom[meetId]?.includes(socket.id) ||
-        usersInRoom[meetId]?.find((u) => u.id === user.id)
+        socketsInMeeting[meetId]?.includes(socket.id) ||
+        usersInMeeting[meetId]?.find((u) => u.id === user.id)
       ) {
         socket.emit('user-already-joined');
         return;
       }
 
       if (
-        socketsInRoom[meetId]?.length === MAX_CAPACITY ||
-        usersInRoom[meetId]?.length === MAX_CAPACITY
+        socketsInMeeting[meetId]?.length === MAX_CAPACITY ||
+        usersInMeeting[meetId]?.length === MAX_CAPACITY
       ) {
-        socket.emit('room-full');
+        socket.emit('meeting-full');
         return;
       }
 
       user.socketId = socket.id;
 
-      if (socketsInRoom[meetId]) {
-        socketsInRoom[meetId].push(socket.id);
+      if (socketsInMeeting[meetId]) {
+        socketsInMeeting[meetId].push(socket.id);
       } else {
-        socketsInRoom[meetId] = [socket.id];
+        socketsInMeeting[meetId] = [socket.id];
       }
 
       socket.join(meetId);
 
-      if (usersInRoom[meetId]) {
-        const item = usersInRoom[meetId]?.find((u) => u.id === user.id);
-        if (!item) usersInRoom[meetId].push(user);
+      if (usersInMeeting[meetId]) {
+        const item = usersInMeeting[meetId]?.find((u) => u.id === user.id);
+        if (!item) usersInMeeting[meetId].push(user);
       } else {
-        usersInRoom[meetId] = [user];
+        usersInMeeting[meetId] = [user];
       }
 
       io.sockets
         .in(meetId)
-        .emit('updated-users-list', { usersInThisRoom: usersInRoom[meetId] });
+        .emit('updated-users-list', { usersInThisMeeting: usersInMeeting[meetId] });
     });
 
     socket.on('whiteboard', ({ meetId, user }) => {
@@ -64,21 +64,21 @@ function socketIOServer(server, MAX_CAPACITY) {
     });
 
     socket.on('disconnect', () => {
-      const rooms = Object.keys(socketsInRoom);
-      rooms.forEach((roomId) => {
-        if (socketsInRoom[roomId].includes(socket.id)) {
-          const remainingUsers = socketsInRoom[roomId].filter(
+      const meetings = Object.keys(socketsInMeeting);
+      meetings.forEach((meetingId) => {
+        if (socketsInMeeting[meetingId].includes(socket.id)) {
+          const remainingUsers = socketsInMeeting[meetingId].filter(
             (u) => u !== socket.id,
           );
-          const remainingUserObj = usersInRoom[roomId].filter(
+          const remainingUserObj = usersInMeeting[meetingId].filter(
             (u) => u.socketId !== socket.id,
           );
 
-          socketsInRoom[roomId] = remainingUsers;
-          usersInRoom[roomId] = remainingUserObj;
+          socketsInMeeting[meetingId] = remainingUsers;
+          usersInMeeting[meetingId] = remainingUserObj;
 
-          io.sockets.in(roomId).emit('updated-users-list', {
-            usersInThisRoom: usersInRoom[roomId],
+          io.sockets.in(meetingId).emit('updated-users-list', {
+            usersInThisMeeting: usersInMeeting[meetingId],
           });
         }
       });

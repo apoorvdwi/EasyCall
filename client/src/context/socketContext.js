@@ -39,7 +39,7 @@ const SocketProvider = ({ children }) => {
     if (meetId && !socketConnected.current) {
       socketRef.current = io(process.env.REACT_APP_SERVER_BASE_URL);
       socketConnected.current = true;
-      joinRoom();
+      joinMeeting();
       listenToParticipantUpdates();
       listenToWhiteBoard();
       receiveMessages();
@@ -101,12 +101,12 @@ const SocketProvider = ({ children }) => {
     }
   }, [meetId, socketRef.current]);
 
-  const joinRoom = () => {
-    socketRef.current.emit('join-room', { meetId, user });
+  const joinMeeting = () => {
+    socketRef.current.emit('join-meeting', { meetId, user });
 
-    socketRef.current.on('room-full', () => {
+    socketRef.current.on('meeting-full', () => {
       if (meeting) endMeeting();
-      enqueueSnackbar('This room is full, please join a different room', {
+      enqueueSnackbar('This meeting is full, please join a different meeting', {
         anchorOrigin: {
           vertical: 'top',
           horizontal: 'center',
@@ -123,7 +123,7 @@ const SocketProvider = ({ children }) => {
     socketRef.current.on('user-already-joined', () => {
       if (meeting) endMeeting();
       enqueueSnackbar(
-        "It looks like you're already in this room. You cannot join the same room twice",
+        "It looks like you're already in this meeting. You cannot join the same meeting twice",
         {
           anchorOrigin: {
             vertical: 'top',
@@ -157,8 +157,8 @@ const SocketProvider = ({ children }) => {
   };
 
   const listenToParticipantUpdates = () => {
-    socketRef.current.on('updated-users-list', ({ usersInThisRoom }) => {
-      setUsersList(usersInThisRoom);
+    socketRef.current.on('updated-users-list', ({ usersInThisMeeting }) => {
+      setUsersList(usersInThisMeeting);
     });
   };
 
