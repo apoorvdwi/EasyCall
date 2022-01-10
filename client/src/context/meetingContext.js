@@ -152,9 +152,7 @@ const MeetingProvider = ({ children }) => {
         setScreenTrack(userScreen);
         meeting.localParticipant.publishTrack(userScreen);
         userScreen.mediaStreamTrack.onended = () => {
-          meeting.localParticipant.unpublishTrack(screenTrack);
-          screenTrack.stop();
-          setScreenTrack(null);
+          document.getElementById('shareScreenIcon').click();
         };
       } catch (e) {
         console.error(e);

@@ -26,7 +26,7 @@ const SharedScreen = () => {
     };
   }, [screenTrack]);
 
-  return <StyledVideo ref={screenRef} autoPlay />;
+  return screenTrack && <StyledVideo ref={screenRef} autoPlay />;
 };
 
 export default SharedScreen;

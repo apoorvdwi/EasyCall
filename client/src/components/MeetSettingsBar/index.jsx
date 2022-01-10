@@ -102,6 +102,7 @@ const MeetSettingsBar = (props) => {
 
       <Tooltip placement="left" title="Share Screen">
         <span
+          id="shareScreenIcon"
           className="control"
           onClick={() => {
             toggleScreenShare();

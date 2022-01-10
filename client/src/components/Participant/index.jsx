@@ -82,8 +82,8 @@ const Participant = ({ participant, me = false }) => {
   const [participantUser, setParticipantUser] = useState(null);
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
-  const [isVideoEnabled, setIsVideoEnabled] = useState(userVideo);
-  const [isAudioEnabled, setIsAudioEnabled] = useState(userAudio);
+  const [isVideoEnabled, setIsVideoEnabled] = useState(!!videoTracks.length);
+  const [isAudioEnabled, setIsAudioEnabled] = useState(!!audioTracks.length);
 
   const videoRef = useRef();
   const audioRef = useRef();

@@ -156,7 +156,7 @@ const MeetChat = () => {
             const name = chat.user.displayName;
             return (
               <Message me={chat.user.id === user.id}>
-                <span>{name === user.displayName ? 'You' : name}</span>
+                <span>{chat.user.id === user.id ? 'You' : name}</span>
                 <p>{chat.message.body}</p>
               </Message>
             );
