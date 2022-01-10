@@ -143,6 +143,7 @@ const Participant = ({ participant, me = false }) => {
   useEffect(() => {
     const videoTrack = videoTracks[0];
     if (videoTrack) {
+      setIsVideoEnabled(true);
       videoTrack.attach(videoRef.current);
       return () => {
         videoTrack.detach();
@@ -153,6 +154,7 @@ const Participant = ({ participant, me = false }) => {
   useEffect(() => {
     const audioTrack = audioTracks[0];
     if (audioTrack) {
+      setIsAudioEnabled(true);
       audioTrack.attach(audioRef.current);
       return () => {
         audioTrack.detach();
