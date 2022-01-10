@@ -75,15 +75,15 @@ const Participant = ({ participant, me = false }) => {
   const meetingContext = useContext(MeetingContext);
   const socketContext = useContext(SocketContext);
   const { usersList } = socketContext;
-  const { participantWidth, userAudio, userVideo, setScreenTrack } =
+  const { participantWidth, setScreenTrack } =
     meetingContext;
   const userContext = useContext(UserContext);
   const { user } = userContext;
   const [participantUser, setParticipantUser] = useState(null);
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
-  const [isVideoEnabled, setIsVideoEnabled] = useState(!!videoTracks.length);
-  const [isAudioEnabled, setIsAudioEnabled] = useState(!!audioTracks.length);
+  const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+  const [isAudioEnabled, setIsAudioEnabled] = useState(true);
 
   const videoRef = useRef();
   const audioRef = useRef();
@@ -143,7 +143,6 @@ const Participant = ({ participant, me = false }) => {
   useEffect(() => {
     const videoTrack = videoTracks[0];
     if (videoTrack) {
-      setIsVideoEnabled(true);
       videoTrack.attach(videoRef.current);
       return () => {
         videoTrack.detach();
@@ -154,7 +153,6 @@ const Participant = ({ participant, me = false }) => {
   useEffect(() => {
     const audioTrack = audioTracks[0];
     if (audioTrack) {
-      setIsAudioEnabled(true);
       audioTrack.attach(audioRef.current);
       return () => {
         audioTrack.detach();

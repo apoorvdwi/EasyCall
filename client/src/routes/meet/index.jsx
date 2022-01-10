@@ -189,29 +189,18 @@ const Meet = (props) => {
         <MeetContainer>
           {isConnecting ? <Loader /> : null}
           {!isConnecting && meeting ? (
-            screenToDisplay ? (
-              <>
-                <ParticipantShrinked>
-                  <Participant
-                    key={meeting.localParticipant.sid}
-                    participant={meeting.localParticipant}
-                    me
-                  />
-                  {remoteParticipants}
-                </ParticipantShrinked>
-                {screenToDisplay === 'whiteBoard' ? <WhiteBoard /> : null}
-                {screenToDisplay === 'sharedScreen' ? <SharedScreen /> : null}
-              </>
-            ) : (
-              <>
+            <>
+              <ParticipantShrinked isShrinked={screenToDisplay}>
                 <Participant
                   key={meeting.localParticipant.sid}
                   participant={meeting.localParticipant}
                   me
                 />
                 {remoteParticipants}
-              </>
-            )
+              </ParticipantShrinked>
+              {screenToDisplay === 'whiteBoard' ? <WhiteBoard /> : null}
+              {screenToDisplay === 'sharedScreen' ? <SharedScreen /> : null}
+            </>
           ) : null}
         </MeetContainer>
         {panelView ? <MeetInfo /> : null}

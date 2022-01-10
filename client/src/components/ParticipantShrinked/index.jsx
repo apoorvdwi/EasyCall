@@ -29,7 +29,11 @@ const Wrapper = styled.div`
 `;
 
 const ParticipantShrinked = (props) => {
-  return <Wrapper>{props.children}</Wrapper>;
+  return props.isShrinked ? (
+    <Wrapper>{props.children}</Wrapper>
+  ) : (
+    <>{props.children}</>
+  );
 };
 
 export default ParticipantShrinked;
