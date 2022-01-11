@@ -2,6 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
+  ${(props) =>
+    props.isShrinked
+      ? `
   width: 25%;
   max-height: 95%;
   padding: 0 5px;
@@ -25,15 +28,19 @@ const Wrapper = styled.div`
   /* Handle */
   &::-webkit-scrollbar-thumb {
     background: #000411;
-  }
+  }`
+      : `
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  align-content: center;
+  flex-wrap: wrap;`}
 `;
 
 const ParticipantShrinked = (props) => {
-  return props.isShrinked ? (
-    <Wrapper>{props.children}</Wrapper>
-  ) : (
-    <>{props.children}</>
-  );
+  return <Wrapper isShrinked={props.isShrinked}>{props.children}</Wrapper>;
 };
 
 export default ParticipantShrinked;

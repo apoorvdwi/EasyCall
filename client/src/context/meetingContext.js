@@ -1,4 +1,4 @@
-import React, { useState, createContext, useEffect } from 'react';
+import React, { useState, createContext, useEffect, useCallback } from 'react';
 import { connect, LocalAudioTrack, LocalVideoTrack } from 'twilio-video';
 import moment from 'moment';
 import { doc, getDoc } from 'firebase/firestore';
@@ -43,7 +43,7 @@ const MeetingProvider = ({ children }) => {
     execute();
   }, [meetingDetails]);
 
-  const endMeeting = () => {
+  const endMeeting = useCallback(() => {
     setIsConnecting(true);
     setMeetId(null);
     setPanelView(null);
@@ -67,7 +67,7 @@ const MeetingProvider = ({ children }) => {
       }
       return null;
     });
-  };
+  }, []);
 
   const leaveMeeting = () => {
     if (!meeting || !meeting.localParticipant) return;
