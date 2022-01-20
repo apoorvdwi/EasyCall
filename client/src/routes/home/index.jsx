@@ -153,6 +153,7 @@ const BottomContainer = styled.div`
     padding: 30px;
     display: grid;
     grid-template-columns: 48.5% 48.5%;
+    grid-template-rows: 100%;
     column-gap: 3%;
 
     .left {
