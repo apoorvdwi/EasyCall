@@ -3,7 +3,7 @@ const http = require('http');
 const cors = require('cors');
 const config = require('./src/config');
 const twilio = require('./src/twilio');
-const { socketIOServer } = require('./src/socket');
+const { meetingSocketIOServer, chatSocketIOServer } = require('./src/socket');
 
 const app = express();
 app.set('port', process.env.PORT || 5000);
@@ -26,7 +26,8 @@ app.use('/twilio', twilio);
 
 const server = http.createServer(app);
 
-socketIOServer(server, MAX_CAPACITY);
+meetingSocketIOServer(server, MAX_CAPACITY);
+chatSocketIOServer(server);
 
 server.listen(app.get('port'), () => {
   console.log(`Express server listening on port ${app.get('port')}`);

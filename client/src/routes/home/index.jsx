@@ -9,6 +9,7 @@ import { MeetingContext } from '../../context/meetingContext';
 import Logo from '../../assets/logoDarkTransparentHorizhontal.png';
 import { StyledSubmitButton } from './components';
 import HomeView from './views/homeView';
+import MessageView from './views/messageView';
 import { useSnackbar } from 'notistack';
 import { Collapse, Button, Avatar } from '@mui/material';
 
@@ -95,14 +96,14 @@ const CurrentRoute = styled.div`
   `
       : ''}
 
-  ${(props) =>
+  /* ${(props) =>
     props.disabled
       ? `
   pointer-events: none;
   cursor: not-allowed;
   filter: opacity(0.5);
   `
-      : ''}
+      : ''} */
 `;
 
 const BottomContainer = styled.div`
@@ -299,7 +300,7 @@ const HomePage = () => {
             </div>
           </div>
           <div className="rightContainer">
-            {view === 'home' ? <HomeView /> : null}
+            {view === 'home' ? <HomeView /> : <MessageView />}
           </div>
         </BottomContainer>
       </HomeWrapper>

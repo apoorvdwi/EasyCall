@@ -68,6 +68,17 @@ const Meet = (props) => {
   const updateUserMeetings = async (meetingData, meetingId) => {
     const userRef = doc(db, 'users', user.id);
     let updatedMeetingData = user.meetings ? user.meetings : {};
+    let updatedChatIds = user.chats ? user.chats : [];
+
+    if (!(meetingData.chatId in updatedChatIds)) {
+      updatedChatIds = {
+        ...updatedChatIds,
+        [meetingData.chatId]: meetingData.meetingTitle
+          ? meetingData.meetingTitle
+          : meetingData.chatId,
+      };
+    }
+
     if (!(meetingId in updatedMeetingData)) {
       updatedMeetingData = {
         ...updatedMeetingData,
@@ -78,6 +89,7 @@ const Meet = (props) => {
     }
     await updateDoc(userRef, {
       meetings: updatedMeetingData,
+      chats: updatedChatIds,
     });
   };
 

@@ -1,9 +1,10 @@
-function socketIOServer(server, MAX_CAPACITY) {
+function meetingSocketIOServer(server, MAX_CAPACITY) {
   // initialise a Socket.io server
 
   const { allowedURLs } = require('./config');
   const addMessageToFirebase = require('./util');
   const io = require('socket.io')(server, {
+    path: '/meet-socket/',
     cors: {
       origin: allowedURLs,
     },
@@ -13,8 +14,6 @@ function socketIOServer(server, MAX_CAPACITY) {
   const usersInMeeting = {};
 
   io.on('connection', (socket) => {
-    console.log('Connection successful', socket.id);
-
     socket.on('join-meeting', ({ meetId, user }) => {
       if (
         socketsInMeeting[meetId]?.includes(socket.id) ||
@@ -51,7 +50,9 @@ function socketIOServer(server, MAX_CAPACITY) {
 
       io.sockets
         .in(meetId)
-        .emit('updated-users-list', { usersInThisMeeting: usersInMeeting[meetId] });
+        .emit('updated-users-list', {
+          usersInThisMeeting: usersInMeeting[meetId],
+        });
     });
 
     socket.on('whiteboard', ({ meetId, user }) => {
@@ -86,4 +87,71 @@ function socketIOServer(server, MAX_CAPACITY) {
   });
 }
 
-module.exports = { socketIOServer };
+function chatSocketIOServer(server) {
+  // initialise a Socket.io server
+
+  const { allowedURLs } = require('./config');
+  const addMessageToFirebase = require('./util');
+  const io = require('socket.io')(server, {
+    path: '/chat-socket/',
+    cors: {
+      origin: allowedURLs,
+    },
+  });
+
+  const socketsInChatRoom = {};
+  const usersInChatRoom = {};
+
+  io.on('connection', (socket) => {
+    socket.on('join-chatroom', ({ chatRoomId, user }) => {
+      if (
+        socketsInChatRoom[chatRoomId]?.includes(socket.id) ||
+        usersInChatRoom[chatRoomId]?.find((u) => u.id === user.id)
+      ) {
+        socket.emit('user-already-joined');
+        return;
+      }
+
+      user.socketId = socket.id;
+
+      if (socketsInChatRoom[chatRoomId]) {
+        socketsInChatRoom[chatRoomId].push(socket.id);
+      } else {
+        socketsInChatRoom[chatRoomId] = [socket.id];
+      }
+
+      socket.join(chatRoomId);
+
+      if (usersInChatRoom[chatRoomId]) {
+        const item = usersInChatRoom[chatRoomId]?.find((u) => u.id === user.id);
+        if (!item) usersInChatRoom[chatRoomId].push(user);
+      } else {
+        usersInChatRoom[chatRoomId] = [user];
+      }
+    });
+
+    socket.on('send-message', ({ chatRoomId, chatId, chat }) => {
+      addMessageToFirebase(chatId, chat);
+      socket.to(chatRoomId).emit('receive-message', { chat });
+    });
+
+    socket.on('disconnect', () => {
+      const meetings = Object.keys(socketsInChatRoom);
+      meetings.forEach((chatRoomId) => {
+        if (socketsInChatRoom[chatRoomId].includes(socket.id)) {
+          const remainingUsers = socketsInChatRoom[chatRoomId].filter(
+            (u) => u !== socket.id,
+          );
+          const remainingUserObj = usersInChatRoom[chatRoomId].filter(
+            (u) => u.socketId !== socket.id,
+          );
+
+          socketsInChatRoom[chatRoomId] = remainingUsers;
+          usersInChatRoom[chatRoomId] = remainingUserObj;
+        }
+      });
+    });
+  });
+}
+
+module.exports = { meetingSocketIOServer, chatSocketIOServer };

@@ -103,7 +103,7 @@ const MessageInput = styled(Input)`
   }
 `;
 
-const InputWrapper = styled.div`
+const InputWrapper = styled.form`
   width: 100%;
   position: sticky;
   padding: 10px;
@@ -162,7 +162,12 @@ const MeetChat = () => {
             );
           })}
         </ChatsWrapper>
-        <InputWrapper>
+        <InputWrapper
+          onSubmit={() => {
+            sendMessage(messageData, modifiedUserObject);
+            setMessageData('');
+          }}
+        >
           <MessageInput
             value={messageData}
             onChange={(e) => {
@@ -170,12 +175,7 @@ const MeetChat = () => {
             }}
             placeholder="Start Typing ...."
           />
-          <StyledSubmitButton
-            onClick={() => {
-              sendMessage(messageData, modifiedUserObject);
-              setMessageData('');
-            }}
-          >
+          <StyledSubmitButton htmlType="submit">
             <IoSendSharp size={20} />
           </StyledSubmitButton>
         </InputWrapper>

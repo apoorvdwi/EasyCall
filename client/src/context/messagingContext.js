@@ -7,6 +7,9 @@ import React, {
 } from 'react';
 import io from 'socket.io-client';
 import { UserContext } from './userContext';
+import moment from 'moment';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const MessagingContext = createContext();
 
@@ -19,10 +22,45 @@ const MessagingProvider = ({ children }) => {
   const socketConnected = useRef(false);
 
   useEffect(() => {
+    const execute = async () => {
+      if (chatId) {
+        const chatRef = doc(db, 'chats', chatId);
+        const chatDoc = await getDoc(chatRef);
+        const sortedChats = chatDoc.data()?.messages.sort((first, second) => {
+          const firstDate = moment(first.createdAt).valueOf();
+          const secondDate = moment(second.createdAt).valueOf();
+          let ans = 0;
+          if (firstDate === secondDate) ans = 0;
+          else if (firstDate < secondDate) ans = -1;
+          else ans = 1;
+
+          return ans;
+        });
+
+        if (sortedChats) setActiveChats(sortedChats);
+        else setActiveChats([]);
+      }
+    };
+
+    execute();
+  }, [chatId]);
+
+  useEffect(() => {
     if (chatId && !socketConnected.current) {
-      socketRef.current = io(process.env.REACT_APP_SERVER_BASE_URL);
+      socketRef.current = io(process.env.REACT_APP_SERVER_BASE_URL, {
+        path: '/chat-socket/',
+      });
       socketConnected.current = true;
-      joinMeeting();
+      joinChatRoom();
+      receiveMessages();
+    } else if (chatId && socketConnected.current) {
+      socketRef.current.disconnect();
+      socketConnected.current = false;
+      socketRef.current = io(process.env.REACT_APP_SERVER_BASE_URL, {
+        path: '/chat-socket/',
+      });
+      socketConnected.current = true;
+      joinChatRoom();
       receiveMessages();
     }
   }, [chatId]);
@@ -46,8 +84,8 @@ const MessagingProvider = ({ children }) => {
     }
   }, [chatId, socketRef.current]);
 
-  const joinMeeting = () => {
-    socketRef.current.emit('join-chatGroup', { chatId, user });
+  const joinChatRoom = () => {
+    socketRef.current.emit('join-chatroom', { chatId, user });
   };
 
   const sendMessage = (body, user) => {
@@ -61,14 +99,14 @@ const MessagingProvider = ({ children }) => {
     };
     addChat(chat);
 
-    socketRef.current.emit('send-message-dashboard', {
+    socketRef.current.emit('send-message', {
       chatId,
       chat,
     });
   };
 
   const receiveMessages = () => {
-    socketRef.current.on('receive-message-dashboard', ({ chat }) => {
+    socketRef.current.on('receive-message', ({ chat }) => {
       addChat(chat);
     });
   };
@@ -84,6 +122,8 @@ const MessagingProvider = ({ children }) => {
     receiveMessages,
     chatId,
     setChatId,
+    activeChats,
+    setActiveChats,
   };
 
   return (

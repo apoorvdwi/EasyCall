@@ -37,7 +37,10 @@ const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (meetId && !socketConnected.current) {
-      socketRef.current = io(process.env.REACT_APP_SERVER_BASE_URL);
+      socketRef.current = io(process.env.REACT_APP_SERVER_BASE_URL, {
+        path: '/meet-socket/',
+      });
+
       socketConnected.current = true;
       joinMeeting();
       listenToParticipantUpdates();

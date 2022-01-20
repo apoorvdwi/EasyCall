@@ -1,0 +1,17 @@
+.addChatPopover {
+    .ant-popover-inner {
+        background-color: #e1efe6 !important;
+        border-radius: 10px;
+    }
+
+    .ant-popover-inner-content {
+        padding: 17px 17px 18px 19px;
+    }
+
+    .ant-popover-arrow {
+        border-color: #e1efe6 !important;
+        .ant-popover-arrow-content {
+            background-color: #e1efe6 !important;
+        }
+    }
+}

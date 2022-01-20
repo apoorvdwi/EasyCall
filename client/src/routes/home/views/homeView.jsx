@@ -64,6 +64,7 @@ const HomeView = () => {
     const meetingRef = doc(db, 'meetings', meetingId);
     const chatRef = doc(db, 'chats', chatId);
     await setDoc(chatRef, {
+      chatRoomTitle: newMeetName ? newMeetName : chatId,
       messages: [],
       createdAt: new Date(),
       meetingId,
@@ -79,6 +80,15 @@ const HomeView = () => {
     setMeetId(meetingId);
     const userRef = doc(db, 'users', user.id);
     let updatedMeetingData = user.meetings ? user.meetings : {};
+    let updatedChatIds = user.chats ? user.chats : [];
+
+    if (!(chatId in updatedChatIds)) {
+      updatedChatIds = {
+        ...updatedChatIds,
+        [chatId]: newMeetName ? newMeetName : chatId,
+      };
+    }
+
     if (!(meetingId in updatedMeetingData)) {
       updatedMeetingData = {
         ...updatedMeetingData,
@@ -87,7 +97,9 @@ const HomeView = () => {
     }
     await updateDoc(userRef, {
       meetings: updatedMeetingData,
+      chats: updatedChatIds,
     });
+
     setLocalLoading({ ...localLoading, create: false });
     history.push(`/meet/${meetingId}`);
   };

@@ -16,7 +16,7 @@ const addMessageToFirebase = async (chatId, messageData) => {
   const docRef = db.collection('chats').doc(`${chatId}`);
 
   const prevData = (await docRef.get()).data();
-  const newMessages = prevData.messages;
+  const newMessages = prevData ? prevData.messages : [];
   await docRef.update({
     messages: [...newMessages, messageData],
   });
