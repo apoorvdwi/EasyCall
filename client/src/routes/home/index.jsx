@@ -95,15 +95,6 @@ const CurrentRoute = styled.div`
   border-bottom : 4px solid #160c28;
   `
       : ''}
-
-  /* ${(props) =>
-    props.disabled
-      ? `
-  pointer-events: none;
-  cursor: not-allowed;
-  filter: opacity(0.5);
-  `
-      : ''} */
 `;
 
 const BottomContainer = styled.div`

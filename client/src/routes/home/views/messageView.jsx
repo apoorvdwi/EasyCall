@@ -1,8 +1,9 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
-import { BsArrowRight } from 'react-icons/bs';
+import { BsArrowRight, BsFillShareFill } from 'react-icons/bs';
+import { MdOutlineExitToApp } from 'react-icons/md';
 import { AiOutlinePlus } from 'react-icons/ai';
-import { Button, Input, Popover, Tooltip } from 'antd';
+import { Button, Input, Popover, Tooltip, Popconfirm } from 'antd';
 import { RiChatNewLine } from 'react-icons/ri';
 import { UserContext } from '../../../context/userContext';
 import { MessagingContext } from '../../../context/messagingContext';
@@ -81,9 +82,9 @@ const Message = styled.div`
     ${(props) =>
     props.me
       ? `
-    text-align: right;`
+  text-align: right;`
       : `
-    text-align: left;`}
+  text-align: left;`}
   }
 
   ${(props) =>
@@ -257,6 +258,35 @@ const MessageView = () => {
     setCreateChatRoomVisible(false);
   };
 
+  const shareChatRoom = () => {
+    navigator.clipboard.writeText(chatId).then(() => {
+      enqueueSnackbar('Chat ID copied to clipboard', {
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+        TransitionComponent: Collapse,
+        variant: 'success',
+      });
+    });
+  };
+
+  const leaveChatRoom = async () => {
+    const userRef = doc(db, 'users', user.id);
+
+    const updatedChatIds = user.chats ? user.chats : [];
+
+    if (chatId in updatedChatIds) {
+      delete updatedChatIds[chatId];
+    }
+
+    await updateDoc(userRef, {
+      chats: updatedChatIds,
+    });
+    setActiveChats(null);
+    setChatId(null);
+  };
+
   const joinChatPopOverContent = (
     <>
       <form
@@ -370,6 +400,13 @@ const MessageView = () => {
       </LeftContainer>
       <RightContainer>
         <TopDiv>
+          <Tooltip placement="right" title="Copy Chatroom Id">
+            <BsFillShareFill
+              onClick={shareChatRoom}
+              style={{ cursor: 'pointer' }}
+              size={30}
+            />
+          </Tooltip>
           <Heading
             style={{
               width: '400px',
@@ -382,6 +419,16 @@ const MessageView = () => {
           >
             {chatId ? user.chats[chatId] : ''}
           </Heading>
+          <Popconfirm
+            overlayClassName="leaveChat"
+            placement="bottomLeft"
+            title="Leave ChatRoom ?"
+            onConfirm={leaveChatRoom}
+          >
+            <Tooltip placement="right" title="Leave Chatroom">
+              <MdOutlineExitToApp style={{ cursor: 'pointer' }} size={40} />
+            </Tooltip>
+          </Popconfirm>
         </TopDiv>
         {chatId ? (
           <>

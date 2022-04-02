@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { ReactComponent as Loader } from '../../assets/loader.svg';
 
@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   background-color: #000411;
 `;
 
-const LoginWrapper = styled.div`
+const LoadingWrapper = styled.div`
   width: 100%;
   height: 100%;
   border-radius: 20px;
@@ -27,9 +27,9 @@ const LoginWrapper = styled.div`
 const LoadingPage = () => {
   return (
     <Wrapper>
-      <LoginWrapper>
+      <LoadingWrapper>
         <Loader />
-      </LoginWrapper>
+      </LoadingWrapper>
     </Wrapper>
   );
 };

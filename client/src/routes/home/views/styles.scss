@@ -5,6 +5,47 @@
     }
 
     .ant-popover-inner-content {
+        padding: 17px 17px 18px;
+    }
+
+    .ant-popover-arrow {
+        border-color: #e1efe6 !important;
+        .ant-popover-arrow-content {
+            background-color: #e1efe6 !important;
+        }
+    }
+}
+
+.leaveChat {
+    .ant-popover-inner {
+        background-color: #e1efe6 !important;
+        border-radius: 10px;
+    }
+
+    .ant-popover-buttons {
+        text-align: center;
+
+        .ant-btn{
+            font-family: 'Sora', sans-serif;
+            background: #efcb68;
+            color: #160c28;
+            border: 1px solid transparent;
+
+            &:hover,
+            &:focus,
+            &:active {
+                color: #160c28;
+                background: #efcb68;
+                border-color: unset;
+            }
+
+            &:hover {
+                border: 1px solid #160c28;
+            }
+        }
+    }
+
+    .ant-popover-inner-content {
         padding: 17px 17px 18px 19px;
     }
 
