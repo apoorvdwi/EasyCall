@@ -6,10 +6,10 @@ import { MdGroups } from 'react-icons/md';
 import { useHistory } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
-import { checkIfMeetingExists } from '../../../utils/twilioUtils';
-import { UserContext } from '../../../context/userContext';
-import { MeetingContext } from '../../../context/meetingContext';
-import { generateWhiteBoardUrl } from '../../../utils';
+import { checkIfMeetingExists } from '../../utils/twilioUtils';
+import { UserContext } from '../../context/userContext';
+import { MeetingContext } from '../../context/meetingContext';
+import { generateWhiteBoardUrl } from '../../utils';
 
 import {
   Heading,
@@ -17,9 +17,9 @@ import {
   StyledInput,
   StyledSubmitButton,
   RecentMeetings,
-} from '../components';
+} from './components';
 
-import { db } from '../../../firebase';
+import { db } from '../../firebase';
 import { doc, setDoc, updateDoc } from 'firebase/firestore';
 
 const HomeView = () => {

@@ -8,7 +8,6 @@ import {
   BsMicMuteFill,
   BsCameraVideoFill,
   BsCameraVideoOffFill,
-  BsRecordCircleFill,
 } from 'react-icons/bs';
 import {
   MdPresentToAll,

@@ -1,174 +1,31 @@
 import React, { useContext, useState } from 'react';
-import styled from 'styled-components';
 import { BsArrowRight, BsFillShareFill } from 'react-icons/bs';
 import { MdOutlineExitToApp } from 'react-icons/md';
 import { AiOutlinePlus } from 'react-icons/ai';
-import { Button, Input, Popover, Tooltip, Popconfirm } from 'antd';
+import { Popover, Tooltip, Popconfirm } from 'antd';
 import { RiChatNewLine } from 'react-icons/ri';
-import { UserContext } from '../../../context/userContext';
-import { MessagingContext } from '../../../context/messagingContext';
-import { Heading, RecentMeetings } from '../components';
+import { UserContext } from '../../context/userContext';
+import { MessagingContext } from '../../context/messagingContext';
+import {
+  Heading,
+  RecentMeetings,
+  StyledSubmitButton,
+  ChatContainer,
+  TopDiv,
+  InputWrapper,
+  MessageInput,
+  Message,
+  ChatsWrapper,
+  RightContainer,
+  LeftContainer,
+} from './components';
 import { IoSendSharp } from 'react-icons/io5';
-import { ReactComponent as Loader } from '../../../assets/loader.svg';
-import { db } from '../../../firebase';
+import { ReactComponent as Loader } from '../../assets/loader.svg';
+import { db } from '../../firebase';
 import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
 import { Collapse } from '@mui/material';
-import './styles.scss';
-
-const LeftContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: top;
-  border-radius: 20px;
-  background-color: #aeb7b3;
-`;
-
-const RightContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: top;
-  border-radius: 20px;
-  background-color: #aeb7b3;
-  position: relative;
-`;
-
-const ChatsWrapper = styled.div`
-  width: 100%;
-  max-height: calc(90% - 60px);
-  min-height: calc(90% - 60px);
-  overflow-y: auto;
-  padding: 10px 15px;
-  display: flex;
-  flex-direction: column;
-  border-radius: 20px;
-
-  &::-webkit-scrollbar {
-    width: 10px;
-    background: #e1efe6;
-  }
-
-  /* Track */
-  &::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px #aeb7b3;
-  }
-
-  /* Handle */
-  &::-webkit-scrollbar-thumb {
-    background: #000411;
-  }
-`;
-
-const Message = styled.div`
-  width: auto;
-  max-width: 95%;
-  padding: 5px 20px;
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  border-radius: 25px;
-  background: #000411;
-  font-family: 'Sora', sans-serif;
-  color: #fff;
-
-  p {
-    font-size: 12px;
-    max-width: 100%;
-    overflow-wrap: break-word;
-    ${(props) =>
-    props.me
-      ? `
-  text-align: right;`
-      : `
-  text-align: left;`}
-  }
-
-  ${(props) =>
-    props.me
-      ? `
-    align-items: flex-end;
-    align-self: flex-end;`
-      : `
-    align-items: flex-start;
-    align-self: flex-start;`}
-
-  span {
-    font-size: 15px;
-  }
-`;
-
-const MessageInput = styled(Input)`
-  width: calc(100%-8px) !important;
-  font-size: 17px;
-  margin-right: 8px;
-  outline: none;
-  border-color: #160c28;
-  border-radius: 10px;
-  background: #e1efe6;
-  font-family: 'Sora', sans-serif;
-  border: 2px solid #160c28;
-
-  &:hover,
-  &:focus,
-  &:active {
-    color: #160c28;
-    background: #e1efe6;
-    border: 2px solid #160c28;
-    box-shadow: none;
-  }
-`;
-
-const InputWrapper = styled.form`
-  width: 100%;
-  position: sticky;
-  padding: 5px 10px 10px;
-  bottom: 0;
-  left: 0;
-  display: flex;
-`;
-
-const StyledSubmitButton = styled(Button)`
-  height: 40px;
-  border-radius: 20px;
-  font-family: 'Sora', sans-serif;
-  background: #efcb68;
-  color: #160c28;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 2px solid transparent;
-
-  &:hover,
-  &:focus,
-  &:active {
-    color: #160c28;
-    background: #efcb68;
-    border-color: unset;
-  }
-
-  &:hover {
-    border: 2px solid #160c28;
-  }
-`;
-
-const TopDiv = styled.div`
-  display: flex;
-  width: 100%;
-  padding: 10px 30px 0;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const ChatContainer = styled.div`
-  padding: 20px;
-  width: 100%;
-  max-height: 90%;
-  overflow-y: auto;
-`;
 
 const MessageView = () => {
   const userContext = useContext(UserContext);
@@ -400,16 +257,18 @@ const MessageView = () => {
       </LeftContainer>
       <RightContainer>
         <TopDiv>
-          <Tooltip placement="right" title="Copy Chatroom Id">
-            <BsFillShareFill
-              onClick={shareChatRoom}
-              style={{ cursor: 'pointer' }}
-              size={30}
-            />
-          </Tooltip>
+          {chatId ? (
+            <Tooltip placement="right" title="Copy Chatroom Id">
+              <BsFillShareFill
+                onClick={shareChatRoom}
+                style={{ cursor: 'pointer' }}
+                size={30}
+              />
+            </Tooltip>
+          ) : null}
           <Heading
             style={{
-              width: '400px',
+              width: '380px',
               justifyContent: 'center',
               textOverflow: 'ellipsis',
               display: 'block',
@@ -419,16 +278,18 @@ const MessageView = () => {
           >
             {chatId ? user.chats[chatId] : ''}
           </Heading>
-          <Popconfirm
-            overlayClassName="leaveChat"
-            placement="bottomLeft"
-            title="Leave ChatRoom ?"
-            onConfirm={leaveChatRoom}
-          >
-            <Tooltip placement="right" title="Leave Chatroom">
-              <MdOutlineExitToApp style={{ cursor: 'pointer' }} size={40} />
-            </Tooltip>
-          </Popconfirm>
+          {chatId ? (
+            <Popconfirm
+              overlayClassName="leaveChat"
+              placement="bottomLeft"
+              title="Leave ChatRoom ?"
+              onConfirm={leaveChatRoom}
+            >
+              <Tooltip placement="right" title="Leave Chatroom">
+                <MdOutlineExitToApp style={{ cursor: 'pointer' }} size={40} />
+              </Tooltip>
+            </Popconfirm>
+          ) : null}
         </TopDiv>
         {chatId ? (
           <>

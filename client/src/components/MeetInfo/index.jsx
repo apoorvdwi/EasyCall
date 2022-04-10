@@ -1,18 +1,9 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components';
 import ParticipantList from '../ParticipantsList';
 import MeetChat from '../MeetChat';
 import MeetingInfo from './infoView';
 import { MeetingContext } from '../../context/meetingContext';
-
-const Wrapper = styled.div`
-  height: 100%;
-  width: 24%;
-  border-left: 3px solid #160c28;
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-  overflow: hidden;
-`;
+import { Wrapper } from './components';
 
 const MeetInfo = () => {
   const meetingContext = useContext(MeetingContext);
