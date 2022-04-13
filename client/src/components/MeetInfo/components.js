@@ -61,8 +61,10 @@ export const ContentWrapper = styled.div`
   }
 
   .data {
+    width: 90%;
     font-size: 11.5px;
     text-overflow: ellipsis;
     text-align: left;
+    overflow-wrap: break-word;
   }
 `;

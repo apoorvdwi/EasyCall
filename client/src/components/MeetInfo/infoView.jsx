@@ -22,10 +22,19 @@ const MeetingInfo = () => {
       </ContentWrapper>
       <ContentWrapper>
         <span className="heading">Meeting Link</span>
-        <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            maxWidth: '100%',
+          }}
+        >
           <span className="data">{window.location.href}</span>
           <MdOutlineContentCopy
-            style={{ marginRight: '10px', cursor: 'pointer' }}
+            style={{
+              marginLeft: '10px',
+              cursor: 'pointer',
+            }}
             onClick={() => {
               navigator.clipboard.writeText(window.location.href).then(() => {
                 enqueueSnackbar('Meeting Link copied', {
