@@ -39,7 +39,8 @@ const MeetChat = () => {
           })}
         </ChatsWrapper>
         <InputWrapper
-          onSubmit={() => {
+          onSubmit={(e) => {
+            e.preventDefault();
             sendMessage(messageData, modifiedUserObject);
             setMessageData('');
           }}
