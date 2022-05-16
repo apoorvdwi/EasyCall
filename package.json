@@ -1,9 +1,8 @@
 {
-  "name": "videocallapp",
+  "name": "easycall",
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently --kill-others \"cd client && npm start\" \"cd server && nodemon index.js\"",
     "dev:install": "npm i && concurrently \"cd client && npm i\" \"cd server && npm i\"",
     "dev:update": "npm update && concurrently \"cd client && npm update\" \"cd server && npm update\"",
@@ -12,7 +11,7 @@
   },
   "keywords": [],
   "author": "apoorv",
-  "license": "ISC",
+  "license": "AGPL 3.0 License",
   "devDependencies": {
     "concurrently": "^6.2.1",
     "husky": "^7.0.4"
